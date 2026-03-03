@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,10 +13,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Tailwind Config for Custom Colors -->
     <script>
         tailwind.config = {
             theme: {
@@ -43,9 +46,9 @@
     </script>
 
     <style>
-        /* Reset & Base */
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
         
         html {
@@ -54,13 +57,53 @@
         }
 
         body {
+            font-family: 'Poppins', sans-serif;
+            background: #f6f2f1;
+            color: #2b2b2b;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
+        /* ===== CUSTOM CURSOR ===== */
+        .cursor-dot,
+        .cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
             width: 6px;
+            height: 6px;
+            background: #e8a7a2;
+        }
+
+        .cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e8a7a2;
+            transition: all 0.15s ease-out;
+        }
+
+        .cursor-hover .cursor-ring {
+            width: 60px;
+            height: 60px;
+            background: rgba(232, 167, 162, 0.1);
+            border-color: #d98c8c;
+        }
+
+        @media (max-width: 768px) {
+            .cursor-dot, .cursor-ring { display: none; }
+            body { cursor: auto; }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #f6f2f1;
@@ -70,19 +113,138 @@
             border-radius: 4px;
         }
 
-        /* Animation Utilities */
+        /* ===== ANIMATIONS ===== */
         .fade-in-section {
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
             will-change: opacity, visibility;
         }
+        
         .fade-in-section.is-visible {
             opacity: 1;
             transform: none;
         }
 
-        /* Hide scrollbar for horizontal sliders */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* ===== FOOTER STYLES ===== */
+        .footer-link {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background: #e8a7a2;
+            transition: width 0.3s ease;
+        }
+        
+        .footer-link:hover::after {
+            width: 100%;
+        }
+
+        .newsletter-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .newsletter-input:focus {
+            border-bottom-color: #e8a7a2;
+            outline: none;
+        }
+
+        .insta-item {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .insta-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(232,167,162,0.8), rgba(217,140,140,0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+        
+        .insta-item:hover::before {
+            opacity: 1;
+        }
+        
+        .insta-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #2b2b2b;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background: #e8a7a2;
+            transform: translateY(-5px);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2b2b2b;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== NO SCROLLBAR ===== */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -90,88 +252,134 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
-        /* Mobile Specific Fixes */
+
+        /* ===== MOBILE FIXES ===== */
         @media (max-width: 768px) {
             .mobile-text-balance {
                 text-wrap: balance;
             }
             
-            /* Ensure images don't overflow */
             img {
                 max-width: 100%;
             }
+        }
 
-            /* Hero adjustments for mobile */
-            .hero-mobile-height {
-                min-height: auto;
-                padding-top: 100px;
-                padding-bottom: 40px;
+        /* ===== MARQUEE ===== */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ===== MOBILE MENU STYLES ===== */
+        .mobile-menu-item {
+            font-size: 1.25rem;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 380px) {
+            .mobile-menu-item {
+                font-size: 1.1rem;
+                padding: 0.4rem 0;
             }
         }
     </style>
 </head>
-<body class="bg-primary text-dark font-sans antialiased overflow-x-hidden">
+<body class="antialiased overflow-x-hidden">
 
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent py-3 md:py-4">
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-ring hidden md:block"></div>
+
+    <!-- Back to Top -->
+    <div class="back-to-top hover-trigger" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </div>
+
+    <!-- ==================== 1. HEADER (Sticky & Clean) ==================== -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-3 md:py-4 bg-transparent">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12 flex justify-between items-center">
             <!-- Logo -->
-            <a href="#" class="font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-dark z-50 whitespace-nowrap">
+            <a href="#" class="font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-dark z-50 whitespace-nowrap hover-trigger">
                 Lovely<span class="text-accent">Collection</span>
             </a>
-
-            <!-- Desktop Menu -->
-            <div class="hidden lg:flex items-center space-x-8 font-medium text-sm tracking-wide">
-                <a href="#" class="hover:text-accent transition-colors">Home</a>
-                <a href="#women" class="hover:text-accent transition-colors">Women</a>
-                <a href="mens.html" class="hover:text-accent transition-colors">Men</a>
-                <a href="#kids" class="hover:text-accent transition-colors">Kids</a>
-                <a href="#accessories" class="hover:text-accent transition-colors">Accessories</a>
-                <a href="#sale" class="text-rose font-semibold hover:text-accent transition-colors">Sale</a>
-                <a href="#contact" class="hover:text-accent transition-colors">Contact</a>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-medium tracking-wide">
+                <a href="#" class="hover:text-accent transition-colors hover-trigger">Home</a>
+                <a href="#women" class="hover:text-accent transition-colors hover-trigger">Women</a>
+                <a href="#men" class="hover:text-accent transition-colors hover-trigger">Men</a>
+                <a href="#kids" class="hover:text-accent transition-colors hover-trigger">Kids</a>
+                <a href="#accessories" class="hover:text-accent transition-colors hover-trigger">Accessories</a>
+                <a href="#sale" class="text-rose font-semibold hover:text-accent transition-colors hover-trigger">Sale</a>
+                <a href="#contact" class="hover:text-accent transition-colors hover-trigger">Contact</a>
             </div>
 
             <!-- Icons -->
-            <div class="flex items-center space-x-3 md:space-x-6">
-                <button class="hover:text-accent transition-colors p-2 md:p-0"><i data-lucide="search" class="w-5 h-5"></i></button>
-                <button class="hover:text-accent transition-colors relative group hidden md:block">
+            <div class="flex items-center space-x-2 md:space-x-4">
+                <button class="hover:text-accent transition-colors p-1.5 md:p-2 hover-trigger">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+                <button class="hover:text-accent transition-colors relative group hidden md:block hover-trigger">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </button>
-                <button onclick="toggleCart()" class="hover:text-accent transition-colors relative p-2 md:p-0">
+                <button onclick="toggleCart()" class="hover:text-accent transition-colors relative p-1.5 md:p-2 hover-trigger">
                     <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                    <span id="cart-count" class="absolute top-0 right-0 md:-top-2 md:-right-2 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
                 </button>
                 
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="lg:hidden z-50 text-dark focus:outline-none p-2">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
+                <!-- Mobile Menu Button - CHHOTA AUR SAHI -->
+                <button id="mobile-menu-btn" class="lg:hidden p-1.5 hover-trigger rounded-lg hover:bg-gray-100 transition-colors">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center space-y-8 lg:hidden">
-            <button id="close-menu-btn" class="absolute top-6 right-6 p-2">
-                <i data-lucide="x" class="w-8 h-8"></i>
-            </button>
-            <a href="#" class="font-serif text-2xl hover:text-accent mobile-menu-link">Home</a>
-            <a href="#women" class="font-serif text-2xl hover:text-accent mobile-menu-link">Women</a>
-            <a href="#men" class="font-serif text-2xl hover:text-accent mobile-menu-link">Men</a>
-            <a href="#kids" class="font-serif text-2xl hover:text-accent mobile-menu-link">Kids</a>
-            <a href="#accessories" class="font-serif text-2xl hover:text-accent mobile-menu-link">Accessories</a>
-            <a href="#sale" class="font-serif text-2xl text-rose mobile-menu-link">Sale</a>
-        </div>
     </nav>
+
+    <!-- Mobile Menu Overlay - CHHOTA AUR COMPACT -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 flex flex-col lg:hidden">
+        <!-- Close Button -->
+        <div class="flex justify-end p-4">
+            <button id="close-menu-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors hover-trigger">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <!-- Menu Items - CHHOTE AUR SAHI -->
+        <div class="flex-1 flex flex-col justify-center items-center px-6 pb-20">
+            <a href="#" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Home</a>
+            <a href="#women" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Women</a>
+            <a href="mens.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Men</a>
+            <a href="#kids" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Kids</a>
+            <a href="#accessories" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Accessories</a>
+            <a href="#sale" class="mobile-menu-item font-serif text-rose hover:text-accent transition-colors mobile-link hover-trigger">Sale</a>
+            <a href="#contact" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Contact</a>
+            
+            <!-- Mobile Login/Register - CHHOTE BUTTONS -->
+            <div class="flex gap-3 mt-6">
+                <button class="px-5 py-2 text-sm border border-dark rounded-full hover:bg-dark hover:text-white transition-colors hover-trigger">Login</button>
+                <button class="px-5 py-2 text-sm bg-accent text-white rounded-full hover:bg-rose transition-colors hover-trigger">Register</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Cart Sidebar -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
             <h2 class="font-serif text-xl md:text-2xl font-bold">Your Cart</h2>
-            <button onclick="toggleCart()" class="hover:text-accent p-2"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <button onclick="toggleCart()" class="hover:text-accent p-2 hover-trigger">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
         </div>
         <div id="cart-items" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-            <!-- Cart items injected here -->
             <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
                 <i data-lucide="shopping-bag" class="w-12 h-12 mb-4 opacity-50"></i>
                 <p>Your cart is empty</p>
@@ -182,38 +390,36 @@
                 <span>Subtotal</span>
                 <span id="cart-total">$0.00</span>
             </div>
-            <button class="w-full bg-dark text-white py-3 md:py-4 rounded-xl font-medium hover:bg-accent transition-colors duration-300">Checkout</button>
+            <button class="w-full bg-dark text-white py-3 md:py-4 rounded-xl font-medium hover:bg-accent transition-colors duration-300 hover-trigger">Checkout</button>
         </div>
     </div>
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden transition-opacity duration-300 opacity-0"></div>
 
-    <!-- Hero Section -->
-    <header class="relative min-h-[90vh] md:min-h-screen flex items-center pt-20 md:pt-0 overflow-hidden">
-        <!-- Background Shapes -->
+    <!-- ==================== 2. HERO SECTION ==================== -->
+    <header class="relative min-h-screen flex items-center pt-20 overflow-hidden">
         <div class="absolute top-0 right-0 w-full md:w-2/3 h-full bg-beige md:rounded-bl-[100px] -z-10"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 md:w-64 md:h-64 bg-accent/20 rounded-full blur-3xl -z-10"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 md:w-96 md:h-96 bg-accent/20 rounded-full blur-3xl -z-10"></div>
 
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12 grid md:grid-cols-2 gap-8 md:gap-12 items-center w-full">
-            <div class="space-y-6 md:space-y-8 fade-in-section order-2 md:order-1 text-center md:text-left pt-4 md:pt-0">
-                <span class="text-accent font-medium tracking-widest uppercase text-xs md:text-sm block">New Summer Collection 2024</span>
+            <div class="space-y-6 md:space-y-8 fade-in-section order-2 md:order-1 text-center md:text-left">
+                <span class="text-accent font-medium tracking-widest uppercase text-xs md:text-sm">New Summer Collection 2024</span>
                 <h1 class="font-serif text-4xl md:text-5xl lg:text-7xl font-bold leading-tight text-dark mobile-text-balance">
-                    Redefine Your <br class="hidden md:block">
+                    Redefine Your <br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-rose">Fashion</span>
                 </h1>
-                <p class="text-gray-600 text-base md:text-lg max-w-md mx-auto md:mx-0 leading-relaxed px-2 md:px-0">
+                <p class="text-gray-600 text-base md:text-lg max-w-md mx-auto md:mx-0 leading-relaxed">
                     Discover the latest trends in soft luxury. Elegant designs crafted for the modern individual.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start px-4 md:px-0">
-                    <a href="#shop" class="px-6 md:px-8 py-3 md:py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 text-sm md:text-base">
+                <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start">
+                    <a href="#shop" class="px-6 md:px-8 py-3 md:py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 hover-trigger text-sm md:text-base">
                         Shop Now
                     </a>
-                    <a href="#lookbook" class="px-6 md:px-8 py-3 md:py-4 bg-white text-dark border border-gray-200 rounded-full font-medium hover:border-accent hover:text-accent transition-all duration-300 text-center text-sm md:text-base">
+                    <a href="#lookbook" class="px-6 md:px-8 py-3 md:py-4 bg-white text-dark border border-gray-200 rounded-full font-medium hover:border-accent hover:text-accent transition-all duration-300 text-center hover-trigger text-sm md:text-base">
                         Explore Lookbook
                     </a>
                 </div>
                 
-                <!-- Stats -->
-                <div class="flex justify-center md:justify-start gap-6 md:gap-8 pt-6 md:pt-8 border-t border-gray-200 mt-6 md:mt-8 mx-4 md:mx-0">
+                <div class="flex gap-6 md:gap-8 pt-6 md:pt-8 border-t border-gray-200 justify-center md:justify-start">
                     <div class="text-center md:text-left">
                         <h4 class="font-serif text-xl md:text-2xl font-bold">20k+</h4>
                         <p class="text-xs md:text-sm text-gray-500">Happy Customers</p>
@@ -225,64 +431,59 @@
                 </div>
             </div>
 
-            <div class="relative h-full flex items-center justify-center order-1 md:order-2 fade-in-section delay-200 mt-4 md:mt-0">
-                <!-- Decorative Circle -->
+            <div class="relative h-full flex items-center justify-center order-1 md:order-2 fade-in-section delay-200">
                 <div class="absolute w-[80%] h-[80%] bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-2xl -z-10"></div>
                 <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop" 
                      alt="Fashion Model" 
-                     class="w-full max-w-[280px] md:max-w-md lg:max-w-lg object-cover rounded-t-[100px] md:rounded-t-[200px] rounded-b-[30px] md:rounded-b-[40px] shadow-2xl">
+                     class="w-full max-w-[280px] md:max-w-md lg:max-w-lg object-cover rounded-t-[120px] md:rounded-t-[200px] rounded-b-[30px] md:rounded-b-[40px] shadow-2xl">
             </div>
         </div>
     </header>
 
-    <!-- Categories Section -->
-    <section id="shop" class="py-12 md:py-20 max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
-        <div class="text-center mb-8 md:mb-16 fade-in-section">
+    <!-- ==================== 3. SHOP BY CATEGORY ==================== -->
+    <section id="shop" class="py-16 md:py-20 max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
+        <div class="text-center mb-12 md:mb-16 fade-in-section">
             <h2 class="font-serif text-3xl md:text-4xl font-bold mb-3 md:mb-4">Shop by Category</h2>
             <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-            <!-- Category 1 -->
-            <div class="group cursor-pointer fade-in-section">
-                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] mb-2 md:mb-4">
+            <div class="group cursor-pointer fade-in-section hover-trigger">
+                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                     <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" alt="Women" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
-                    <div class="absolute bottom-3 md:bottom-4 left-3 md:left-4 text-white">
-                        <h3 class="font-serif text-lg md:text-xl font-bold">Women</h3>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-lg md:text-2xl font-bold">Women</h3>
                         <p class="text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">120 Items</p>
                     </div>
                 </div>
             </div>
-            <!-- Category 2 -->
-            <div class="group cursor-pointer fade-in-section delay-100">
-                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] mb-2 md:mb-4">
+            <div class="group cursor-pointer fade-in-section delay-100 hover-trigger">
+                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                     <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?q=80&w=600&auto=format&fit=crop" alt="Men" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
-                    <div class="absolute bottom-3 md:bottom-4 left-3 md:left-4 text-white">
-                        <h3 class="font-serif text-lg md:text-xl font-bold">Men</h3>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-lg md:text-2xl font-bold">Men</h3>
                         <p class="text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">85 Items</p>
                     </div>
                 </div>
             </div>
-            <!-- Category 3 -->
-            <div class="group cursor-pointer fade-in-section delay-200">
-                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] mb-2 md:mb-4">
+            <div class="group cursor-pointer fade-in-section delay-200 hover-trigger">
+                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                     <img src="https://images.unsplash.com/photo-1519238263496-636190948abc?q=80&w=600&auto=format&fit=crop" alt="Kids" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
-                    <div class="absolute bottom-3 md:bottom-4 left-3 md:left-4 text-white">
-                        <h3 class="font-serif text-lg md:text-xl font-bold">Kids</h3>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-lg md:text-2xl font-bold">Kids</h3>
                         <p class="text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">45 Items</p>
                     </div>
                 </div>
             </div>
-            <!-- Category 4 -->
-            <div class="group cursor-pointer fade-in-section delay-300">
-                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] mb-2 md:mb-4">
+            <div class="group cursor-pointer fade-in-section delay-300 hover-trigger">
+                <div class="relative overflow-hidden rounded-xl md:rounded-2xl aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                     <img src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?q=80&w=600&auto=format&fit=crop" alt="Accessories" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
-                    <div class="absolute bottom-3 md:bottom-4 left-3 md:left-4 text-white">
-                        <h3 class="font-serif text-lg md:text-xl font-bold">Accessories</h3>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-lg md:text-2xl font-bold">Accessories</h3>
                         <p class="text-xs md:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">200 Items</p>
                     </div>
                 </div>
@@ -290,64 +491,288 @@
         </div>
     </section>
 
-    <!-- Best Sellers Section -->
-    <section class="py-12 md:py-20 bg-white">
+    <!-- ==================== 4. BEST SELLERS (FIXED - CONTENT SAHI SE RENDER HOGA) ==================== -->
+    <section class="py-16 md:py-20 bg-white">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
             <div class="flex justify-between items-end mb-8 md:mb-12 fade-in-section">
                 <div>
                     <span class="text-accent font-medium tracking-widest uppercase text-xs md:text-sm">Top Picks</span>
                     <h2 class="font-serif text-3xl md:text-4xl font-bold mt-2">Best Sellers</h2>
                 </div>
-                <a href="#" class="hidden md:flex items-center gap-2 text-dark hover:text-accent transition-colors font-medium text-sm">
+                <a href="#" class="hidden md:flex items-center gap-2 text-sm font-medium hover:text-accent transition-colors hover-trigger">
                     View All <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8" id="best-sellers-grid">
-                <!-- Products injected via JS -->
+            <!-- YEH DIV ME CONTENT DIRECT HTML SE AAYEGA, JS SE NAHI -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                <!-- Product 1 -->
+                <div class="group fade-in-section hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" alt="Linen Blend Blazer" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(1, 'Linen Blend Blazer', 129, 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Linen Blend Blazer</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Women</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$129.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="group fade-in-section delay-100 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop" alt="Silk Evening Dress" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(2, 'Silk Evening Dress', 249, 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Silk Evening Dress</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Women</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$249.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="group fade-in-section delay-200 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop" alt="Cotton Casual Shirt" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(3, 'Cotton Casual Shirt', 59, 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Cotton Casual Shirt</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Men</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$59.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="group fade-in-section delay-300 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop" alt="Tailored Trousers" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(4, 'Tailored Trousers', 89, 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Tailored Trousers</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Men</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$89.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="group fade-in-section hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop" alt="Summer Floral Top" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(5, 'Summer Floral Top', 45, 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Summer Floral Top</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Women</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$45.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="group fade-in-section delay-100 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop" alt="Classic Denim Jacket" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(6, 'Classic Denim Jacket', 110, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Classic Denim Jacket</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Unisex</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$110.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 7 -->
+                <div class="group fade-in-section delay-200 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop" alt="Knit Sweater" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(7, 'Knit Sweater', 75, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Knit Sweater</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Women</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$75.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 8 -->
+                <div class="group fade-in-section delay-300 hover-trigger">
+                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop" alt="Leather Belt" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(8, 'Leather Belt', 35, 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
+                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        </button>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">Leather Belt</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-xs md:text-sm text-gray-500">Accessories</p>
+                            <span class="font-medium text-accent text-sm md:text-base">$35.00</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="mt-8 md:mt-12 text-center md:hidden">
-                <a href="#" class="inline-flex items-center gap-2 text-dark hover:text-accent transition-colors font-medium border-b border-dark pb-1 text-sm">
+                <a href="#" class="inline-flex items-center gap-2 text-sm font-medium border-b border-dark pb-1 hover:text-accent hover:border-accent transition-colors">
                     View All Collection <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- New Arrivals Slider -->
-    <section class="py-12 md:py-20 bg-primary overflow-hidden">
+    <!-- ==================== 5. NEW ARRIVALS SLIDER ==================== -->
+    <section class="py-16 md:py-20 bg-primary overflow-hidden">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
             <div class="flex justify-between items-center mb-6 md:mb-12 fade-in-section">
                 <h2 class="font-serif text-2xl md:text-4xl font-bold">New Arrivals</h2>
-                <div class="flex gap-2 md:gap-4">
-                    <button id="slider-prev" class="w-10 h-10 md:w-12 md:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300">
+                <div class="flex gap-2 md:gap-3">
+                    <button id="slider-prev" class="w-10 h-10 md:w-12 md:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300 hover-trigger">
                         <i data-lucide="arrow-left" class="w-4 h-4 md:w-5 md:h-5"></i>
                     </button>
-                    <button id="slider-next" class="w-10 h-10 md:w-12 md:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300">
+                    <button id="slider-next" class="w-10 h-10 md:w-12 md:h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300 hover-trigger">
                         <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
                     </button>
                 </div>
             </div>
 
             <div class="relative">
-                <div id="new-arrivals-slider" class="flex gap-3 md:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 md:pb-8 px-1">
-                    <!-- Slider items injected via JS -->
+                <div id="new-arrivals-slider" class="flex gap-3 md:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 md:pb-8">
+                    <!-- Slider items -->
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop" alt="Pastel Midi Skirt" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(9, 'Pastel Midi Skirt', 85, 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">Pastel Midi Skirt</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$85.00</p>
+                    </div>
+
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop" alt="Oversized Sunglasses" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(10, 'Oversized Sunglasses', 120, 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">Oversized Sunglasses</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$120.00</p>
+                    </div>
+
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop" alt="Straw Handbag" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(11, 'Straw Handbag', 65, 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">Straw Handbag</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$65.00</p>
+                    </div>
+
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop" alt="White Sneakers" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(12, 'White Sneakers', 95, 'https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">White Sneakers</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$95.00</p>
+                    </div>
+
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop" alt="Gold Necklace" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(13, 'Gold Necklace', 150, 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">Gold Necklace</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$150.00</p>
+                    </div>
+
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                        <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop" alt="Summer Hat" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <button onclick="addToCart(14, 'Summer Hat', 40, 'https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark">Summer Hat</h3>
+                        <p class="text-accent font-medium text-sm md:text-base">$40.00</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sale Banner -->
-    <section id="sale" class="py-12 md:py-20">
+    <!-- ==================== 6. SALE BANNER ==================== -->
+    <section id="sale" class="py-16 md:py-20">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
             <div class="bg-beige rounded-[20px] md:rounded-[40px] overflow-hidden relative fade-in-section">
                 <div class="grid md:grid-cols-2 gap-0">
                     <div class="p-6 md:p-12 lg:p-20 flex flex-col justify-center items-start z-10 order-2 md:order-1">
                         <span class="bg-rose text-white px-3 py-1 md:px-4 md:py-1 rounded-full text-xs md:text-sm font-bold mb-4 md:mb-6">Limited Time Offer</span>
-                        <h2 class="font-serif text-3xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">Summer <br class="hidden md:block">Sale 50% Off</h2>
+                        <h2 class="font-serif text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">Summer <br class="hidden md:block">Sale 50% Off</h2>
                         <p class="text-gray-600 mb-6 md:mb-8 max-w-md text-sm md:text-base">Upgrade your wardrobe with our exclusive summer collection. Premium quality at unbeatable prices.</p>
-                        <button class="px-6 md:px-8 py-3 md:py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 shadow-lg text-sm md:text-base w-full md:w-auto text-center">
+                        <button class="px-6 md:px-8 py-3 md:py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 shadow-lg hover-trigger text-sm md:text-base w-full md:w-auto text-center">
                             Shop The Sale
                         </button>
                         
@@ -375,25 +800,40 @@
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="py-12 md:py-20 bg-white">
+    <!-- ==================== 7. TESTIMONIALS ==================== -->
+    <section class="py-16 md:py-20 bg-white">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12 text-center">
             <h2 class="font-serif text-3xl md:text-4xl font-bold mb-8 md:mb-16 fade-in-section">What Our Clients Say</h2>
             
             <div class="relative max-w-4xl mx-auto fade-in-section px-2">
                 <div id="testimonial-container" class="overflow-hidden">
-                    <!-- Testimonials injected via JS -->
+                    <div class="transition-opacity duration-500">
+                        <div class="flex justify-center mb-4 md:mb-6 text-accent gap-1">
+                            <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>
+                        </div>
+                        <p class="text-lg md:text-xl lg:text-2xl text-gray-600 italic mb-6 md:mb-8 leading-relaxed" id="testimonial-text">"The quality of the fabrics is absolutely stunning. I feel so elegant and comfortable in my new dress. Highly recommend!"</p>
+                        <div>
+                            <h4 class="font-serif text-lg md:text-xl font-bold" id="testimonial-author">Sarah Jenkins</h4>
+                            <p class="text-xs md:text-sm text-gray-500" id="testimonial-role">Fashion Blogger</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="flex justify-center gap-2 mt-6 md:mt-8" id="testimonial-dots">
-                    <!-- Dots injected via JS -->
+                    <button onclick="setTestimonial(0)" class="testimonial-dot w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-accent transition-colors duration-300 hover-trigger"></button>
+                    <button onclick="setTestimonial(1)" class="testimonial-dot w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-gray-300 transition-colors duration-300 hover-trigger"></button>
+                    <button onclick="setTestimonial(2)" class="testimonial-dot w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-gray-300 transition-colors duration-300 hover-trigger"></button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Instagram Gallery -->
-    <section class="py-12 md:py-20 bg-primary">
+    <!-- ==================== 8. INSTAGRAM GALLERY ==================== -->
+    <section class="py-16 md:py-20 bg-primary">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
             <div class="text-center mb-8 md:mb-12 fade-in-section">
                 <h2 class="font-serif text-2xl md:text-4xl font-bold mb-2 md:mb-4">Follow Us @LovelyCollection</h2>
@@ -401,49 +841,48 @@
             </div>
             
             <div class="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4">
-                <!-- Images -->
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section hover-trigger">
                     <img src="https://images.unsplash.com/photo-1529139574466-a302d2d46a97?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
                     </div>
                 </div>
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-100">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-100 hover-trigger">
                     <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
                     </div>
                 </div>
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-200">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-200 hover-trigger">
                     <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
                     </div>
                 </div>
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-100 hidden md:block">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-100 hidden md:block hover-trigger">
                     <img src="https://images.unsplash.com/photo-1502716119720-b23a93e5fe1b?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
                     </div>
                 </div>
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-200 hidden md:block">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-200 hidden md:block hover-trigger">
                     <img src="https://images.unsplash.com/photo-1485968579169-a6e9dc7c575c?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
                     </div>
                 </div>
-                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-300 hidden md:block">
+                <div class="group relative aspect-square overflow-hidden rounded-lg md:rounded-xl cursor-pointer fade-in-section delay-300 hidden md:block hover-trigger">
                     <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <i data-lucide="instagram" class="text-white w-5 h-5 md:w-8 md:h-8"></i>
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Newsletter -->
-    <section class="py-12 md:py-20">
+    <!-- ==================== 9. NEWSLETTER ==================== -->
+    <section class="py-16 md:py-20">
         <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12">
             <div class="bg-dark rounded-[20px] md:rounded-[40px] p-8 md:p-12 lg:p-20 text-center relative overflow-hidden fade-in-section">
                 <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
@@ -452,203 +891,183 @@
                 </div>
                 
                 <div class="relative z-10 max-w-2xl mx-auto">
-                    <h2 class="font-serif text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-4 md:mb-6">Join Our Newsletter</h2>
+                    <h2 class="font-serif text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">Join Our Newsletter</h2>
                     <p class="text-gray-300 mb-6 md:mb-8 text-sm md:text-base">Subscribe to receive updates, access to exclusive deals, and more.</p>
                     
-                    <form class="flex flex-col sm:flex-row gap-3 md:gap-4" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                    <form class="flex flex-col sm:flex-row gap-3 md:gap-4" onsubmit="event.preventDefault(); showToast('Thank you for subscribing!');">
                         <input type="email" placeholder="Enter your email address" class="flex-1 px-4 md:px-6 py-3 md:py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-accent transition-colors text-sm md:text-base">
-                        <button type="submit" class="px-6 md:px-8 py-3 md:py-4 bg-accent text-white rounded-full font-bold hover:bg-rose transition-colors duration-300 text-sm md:text-base">Subscribe</button>
+                        <button type="submit" class="px-6 md:px-8 py-3 md:py-4 bg-accent text-white rounded-full font-bold hover:bg-rose transition-colors duration-300 hover-trigger text-sm md:text-base">Subscribe</button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
 
-      <!-- Footer -->
-     <!-- Unique Footer Design -->
-    <footer class="bg-lc-dark text-white relative overflow-hidden">
+    <!-- ==================== 10. PROFESSIONAL FOOTER ==================== -->
+    <footer id="contact" class="bg-dark text-white relative overflow-hidden">
         <!-- Decorative Elements -->
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-lc-pink to-transparent"></div>
-        <div class="absolute top-20 right-20 w-64 h-64 bg-lc-pink/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-20 left-20 w-96 h-96 bg-lc-rose/5 rounded-full blur-3xl"></div>
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 left-20 w-96 h-96 bg-rose/5 rounded-full blur-3xl"></div>
 
         <!-- Main Footer Content -->
-        <div class="max-w-[1600px] mx-auto px-6 md:px-12 pt-20 pb-12 relative z-10">
+        <div class="max-w-[1600px] mx-auto px-4 md:px-12 pt-16 md:pt-20 pb-8 md:pb-12 relative z-10">
             
             <!-- Top Section: Brand + Newsletter -->
-            <div class="grid md:grid-cols-2 gap-12 items-center mb-16 pb-16 border-b border-white/10">
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center mb-12 md:mb-16 pb-8 md:pb-16 border-b border-white/10">
                 <div class="reveal-up">
-                    <a href="#" class="font-serif text-4xl md:text-5xl font-bold block mb-6 hover-trigger">
-                        Lovely<span class="text-lc-pink">Collection</span>
+                    <a href="#" class="font-serif text-3xl md:text-4xl lg:text-5xl font-bold block mb-4 md:mb-6 hover-trigger">
+                        Lovely<span class="text-accent">Collection</span>
                     </a>
-                    <p class="text-white/60 max-w-md leading-relaxed">
+                    <p class="text-white/60 max-w-md leading-relaxed text-sm md:text-base">
                         Where timeless elegance meets contemporary fashion. 
                         Crafting beautiful moments through style since 2020.
                     </p>
                 </div>
                 
                 <div class="reveal-up">
-                    <h3 class="font-serif text-2xl italic mb-4">Join the Family</h3>
-                    <p class="text-white/50 text-sm mb-6">Subscribe for exclusive offers and style tips.</p>
-                    <form class="flex gap-4" onsubmit="event.preventDefault(); showToast('Welcome to LovelyCollection!');">
-                        <input type="email" placeholder="Your email address" class="newsletter-input flex-1 py-3 text-white placeholder-white/30">
-                        <button type="submit" class="px-6 py-3 bg-lc-pink text-white rounded-full hover:bg-lc-rose transition-colors hover-trigger">
-                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    <h3 class="font-serif text-xl md:text-2xl italic mb-3 md:mb-4">Join the Family</h3>
+                    <p class="text-white/50 text-sm mb-4 md:mb-6">Subscribe for exclusive offers and style tips.</p>
+                    <form class="flex gap-3 md:gap-4" onsubmit="event.preventDefault(); showToast('Welcome to LovelyCollection!');">
+                        <input type="email" placeholder="Your email address" class="newsletter-input flex-1 py-2.5 md:py-3 text-white placeholder-white/30 text-sm md:text-base">
+                        <button type="submit" class="px-4 md:px-6 py-2.5 md:py-3 bg-accent text-white rounded-full hover:bg-rose transition-colors hover-trigger flex-shrink-0">
+                            <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Middle Section: Interactive Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-12 gap-8 mb-16">
+            <!-- Middle Section: 5 Column Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-12 gap-6 md:gap-8 mb-12 md:mb-16">
                 
-                <!-- Shop Column -->
+                <!-- Column 1: Quick Links -->
                 <div class="col-span-1 md:col-span-2 reveal-up">
-                    <h4 class="text-lc-pink text-xs tracking-[0.3em] uppercase mb-6 font-semibold">Shop</h4>
-                    <ul class="space-y-3 text-sm text-white/70">
+                    <h4 class="text-accent text-xs tracking-[0.3em] uppercase mb-4 md:mb-6 font-semibold">Quick Links</h4>
+                    <ul class="space-y-2 md:space-y-3 text-xs md:text-sm text-white/70">
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Home</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Shop</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">About</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Shop -->
+                <div class="col-span-1 md:col-span-2 reveal-up">
+                    <h4 class="text-accent text-xs tracking-[0.3em] uppercase mb-4 md:mb-6 font-semibold">Shop</h4>
+                    <ul class="space-y-2 md:space-y-3 text-xs md:text-sm text-white/70">
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">New Arrivals</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Best Sellers</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Women</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Men</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Accessories</a></li>
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger text-lc-pink">Sale</a></li>
+                        <li><a href="#" class="footer-link text-accent hover:text-white transition-colors hover-trigger">Sale</a></li>
                     </ul>
                 </div>
 
-                <!-- Help Column -->
+                <!-- Column 3: Help -->
                 <div class="col-span-1 md:col-span-2 reveal-up">
-                    <h4 class="text-lc-pink text-xs tracking-[0.3em] uppercase mb-6 font-semibold">Help</h4>
-                    <ul class="space-y-3 text-sm text-white/70">
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Track Order</a></li>
+                    <h4 class="text-accent text-xs tracking-[0.3em] uppercase mb-4 md:mb-6 font-semibold">Help</h4>
+                    <ul class="space-y-2 md:space-y-3 text-xs md:text-sm text-white/70">
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Shipping Info</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Returns</a></li>
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Shipping</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Track Order</a></li>
                         <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Size Guide</a></li>
                     </ul>
                 </div>
 
-                <!-- About Column -->
-                <div class="col-span-1 md:col-span-2 reveal-up">
-                    <h4 class="text-lc-pink text-xs tracking-[0.3em] uppercase mb-6 font-semibold">About</h4>
-                    <ul class="space-y-3 text-sm text-white/70">
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Our Story</a></li>
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Sustainability</a></li>
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Careers</a></li>
-                        <li><a href="#" class="footer-link hover:text-white transition-colors hover-trigger">Press</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
+                <!-- Column 4: Contact Info -->
                 <div class="col-span-2 md:col-span-3 reveal-up">
-                    <h4 class="text-lc-pink text-xs tracking-[0.3em] uppercase mb-6 font-semibold">Get in Touch</h4>
-                    <div class="space-y-4 text-sm text-white/70">
-                        <div class="flex items-start gap-3">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-lc-pink mt-1 flex-shrink-0"></i>
+                    <h4 class="text-accent text-xs tracking-[0.3em] uppercase mb-4 md:mb-6 font-semibold">Contact Info</h4>
+                    <div class="space-y-3 md:space-y-4 text-xs md:text-sm text-white/70">
+                        <div class="flex items-start gap-2 md:gap-3">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 md:w-4 md:h-4 text-accent mt-0.5 md:mt-1 flex-shrink-0"></i>
                             <span>123 Fashion Avenue<br>Design District, NY 10012</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="mail" class="w-4 h-4 text-lc-pink flex-shrink-0"></i>
-                            <a href="mailto:hello@lovelycollection.com" class="hover:text-lc-pink transition-colors">hello@lovelycollection.com</a>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 md:w-4 md:h-4 text-accent flex-shrink-0"></i>
+                            <a href="mailto:hello@lovelycollection.com" class="hover:text-accent transition-colors">hello@lovelycollection.com</a>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="phone" class="w-4 h-4 text-lc-pink flex-shrink-0"></i>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i data-lucide="phone" class="w-3.5 h-3.5 md:w-4 md:h-4 text-accent flex-shrink-0"></i>
                             <span>+1 (555) 123-4567</span>
                         </div>
                     </div>
                     
                     <!-- Social Icons -->
-                    <div class="flex gap-3 mt-6">
-                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-lc-pink hover:border-lc-pink transition-all duration-300 hover-trigger">
-                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                    <div class="flex gap-2 md:gap-3 mt-4 md:mt-6">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 hover-trigger">
+                            <i data-lucide="instagram" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-lc-pink hover:border-lc-pink transition-all duration-300 hover-trigger">
-                            <i data-lucide="facebook" class="w-4 h-4"></i>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 hover-trigger">
+                            <i data-lucide="facebook" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-lc-pink hover:border-lc-pink transition-all duration-300 hover-trigger">
-                            <i data-lucide="twitter" class="w-4 h-4"></i>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 hover-trigger">
+                            <i data-lucide="twitter" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-lc-pink hover:border-lc-pink transition-all duration-300 hover-trigger">
-                            <i data-lucide="youtube" class="w-4 h-4"></i>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-accent hover:border-accent transition-all duration-300 hover-trigger">
+                            <i data-lucide="youtube" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Instagram Mini Grid -->
+                <!-- Column 5: Instagram Mini Grid -->
                 <div class="col-span-2 md:col-span-3 reveal-up">
-                    <h4 class="text-lc-pink text-xs tracking-[0.3em] uppercase mb-6 font-semibold">@LovelyCollection</h4>
-                    <div class="grid grid-cols-3 gap-2">
-                        <a href="#" class="insta-item aspect-square rounded-lg hover-trigger">
+                    <h4 class="text-accent text-xs tracking-[0.3em] uppercase mb-4 md:mb-6 font-semibold">@LovelyCollection</h4>
+                    <div class="grid grid-cols-3 gap-1.5 md:gap-2">
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg hover-trigger">
                             <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500">
                         </a>
-                        <a href="#" class="insta-item aspect-square rounded-lg hover-trigger">
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg hover-trigger">
                             <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500">
                         </a>
-                        <a href="#" class="insta-item aspect-square rounded-lg hover-trigger">
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg hover-trigger">
                             <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500">
                         </a>
-                        <a href="#" class="insta-item aspect-square rounded-lg hover-trigger">
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg hover-trigger">
                             <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500">
                         </a>
-                        <a href="#" class="insta-item aspect-square rounded-lg hover-trigger">
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg hover-trigger">
                             <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500">
                         </a>
-                        <a href="#" class="insta-item aspect-square rounded-lg bg-lc-pink/20 flex items-center justify-center hover:bg-lc-pink/40 transition-colors hover-trigger">
-                            <span class="text-xs font-medium">View All</span>
+                        <a href="#" class="insta-item aspect-square rounded-md md:rounded-lg bg-accent/20 flex items-center justify-center hover:bg-accent/40 transition-colors hover-trigger">
+                            <span class="text-[10px] md:text-xs font-medium">View All</span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Bottom Bar -->
-            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-white/40 text-xs">&copy; 2024 LovelyCollection. Crafted with love.</p>
+            <div class="pt-6 md:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
+                <p class="text-white/40 text-[10px] md:text-xs">&copy; 2024 LovelyCollection. All rights reserved.</p>
                 
-                <div class="flex items-center gap-6 text-white/40 text-xs">
+                <div class="flex items-center gap-4 md:gap-6 text-white/40 text-[10px] md:text-xs">
                     <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms & Conditions</a>
                     <a href="#" class="hover:text-white transition-colors">Cookie Settings</a>
                 </div>
 
-                <!-- Payment Methods -->
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60">VISA</div>
-                    <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60">MC</div>
-                    <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60">AMEX</div>
-                    <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60">PayPal</div>
+                <!-- Payment Icons -->
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-5 md:w-10 md:h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60 font-bold">VISA</div>
+                    <div class="w-8 h-5 md:w-10 md:h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60 font-bold">MC</div>
+                    <div class="w-8 h-5 md:w-10 md:h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60 font-bold">AMEX</div>
+                    <div class="w-8 h-5 md:w-10 md:h-6 bg-white/10 rounded flex items-center justify-center text-[8px] text-white/60 font-bold">PayPal</div>
                 </div>
             </div>
         </div>
 
         <!-- Large Brand Watermark -->
         <div class="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none opacity-[0.02]">
-            <div class="font-serif text-[20vw] font-bold whitespace-nowrap leading-none translate-y-1/3">
+            <div class="font-serif text-[15vw] md:text-[20vw] font-bold whitespace-nowrap leading-none translate-y-1/3 text-white">
                 LovelyCollection
             </div>
         </div>
     </footer>
-    <!-- JavaScript Logic -->
+
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        // --- Data ---
-        const products = [
-            { id: 1, name: "Linen Blend Blazer", price: 129.00, category: "Women", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" },
-            { id: 2, name: "Silk Evening Dress", price: 249.00, category: "Women", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop" },
-            { id: 3, name: "Cotton Casual Shirt", price: 59.00, category: "Men", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop" },
-            { id: 4, name: "Tailored Trousers", price: 89.00, category: "Men", image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop" },
-            { id: 5, name: "Summer Floral Top", price: 45.00, category: "Women", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop" },
-            { id: 6, name: "Classic Denim Jacket", price: 110.00, category: "Unisex", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop" },
-            { id: 7, name: "Knit Sweater", price: 75.00, category: "Women", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop" },
-            { id: 8, name: "Leather Belt", price: 35.00, category: "Accessories", image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop" }
-        ];
-
-        const newArrivals = [
-            { id: 9, name: "Pastel Midi Skirt", price: 85.00, image: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop" },
-            { id: 10, name: "Oversized Sunglasses", price: 120.00, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop" },
-            { id: 11, name: "Straw Handbag", price: 65.00, image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop" },
-            { id: 12, name: "White Sneakers", price: 95.00, image: "https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop" },
-            { id: 13, name: "Gold Necklace", price: 150.00, image: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop" },
-            { id: 14, name: "Summer Hat", price: 40.00, image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop" }
-        ];
-
+        // Testimonials Data
         const testimonials = [
             { text: "The quality of the fabrics is absolutely stunning. I feel so elegant and comfortable in my new dress. Highly recommend!", author: "Sarah Jenkins", role: "Fashion Blogger" },
             { text: "Fast shipping and beautiful packaging. The attention to detail in the stitching is what sets this brand apart.", author: "Michael Chen", role: "Verified Buyer" },
@@ -656,60 +1075,104 @@
         ];
 
         let cart = [];
+        let currentTestimonial = 0;
 
-        // --- Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            renderProducts();
-            renderNewArrivals();
-            initTestimonials();
-            initScrollAnimations();
-            initNavbar();
-            initMobileMenu();
-            initSlider();
+        // ==================== CUSTOM CURSOR ====================
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorRing = document.querySelector('.cursor-ring');
+
+        document.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            
+            cursorRing.animate({
+                left: `${e.clientX}px`,
+                top: `${e.clientY}px`
+            }, { duration: 500, fill: "forwards" });
         });
 
-        // --- Rendering Functions ---
-        function renderProducts() {
-            const grid = document.getElementById('best-sellers-grid');
-            grid.innerHTML = products.map(product => `
-                <div class="group fade-in-section">
-                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4]">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(${product.id})" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2 md:py-3 rounded-lg md:rounded-xl font-medium opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:bg-dark hover:text-white text-sm">
-                            Add to Cart
-                        </button>
-                        <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
-                            <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5"></i>
-                        </button>
-                    </div>
-                    <div class="px-1">
-                        <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate">${product.name}</h3>
-                        <div class="flex justify-between items-center mt-1">
-                            <p class="text-xs md:text-sm text-gray-500">${product.category}</p>
-                            <span class="font-medium text-accent text-sm md:text-base">$${product.price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+        function updateCursorListeners() {
+            document.querySelectorAll('.hover-trigger').forEach(trigger => {
+                trigger.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                trigger.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+            });
+        }
+
+        // ==================== GSAP ANIMATIONS ====================
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.utils.toArray('.fade-in-section').forEach(element => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 20 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 85%",
+                        onEnter: () => element.classList.add('is-visible')
+                    }
+                }
+            );
+        });
+
+        gsap.utils.toArray('.reveal-up').forEach(element => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 30 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                }
+            );
+        });
+
+        // ==================== BACK TO TOP ====================
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // ==================== NAVBAR SCROLL ====================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-accent"></i> ${message}`;
+            document.body.appendChild(toast);
             lucide.createIcons();
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        function renderNewArrivals() {
-            const slider = document.getElementById('new-arrivals-slider');
-            slider.innerHTML = newArrivals.map(item => `
-                <div class="min-w-[160px] md:min-w-[280px] snap-start">
-                    <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group">
-                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
-                    </div>
-                    <h3 class="font-serif text-sm md:text-lg font-bold text-dark truncate px-1">${item.name}</h3>
-                    <p class="text-accent font-medium text-sm md:text-base px-1">$${item.price.toFixed(2)}</p>
-                </div>
-            `).join('');
-        }
-
-        // --- Cart Logic ---
+        // ==================== CART FUNCTIONS ====================
         function toggleCart() {
             const sidebar = document.getElementById('cart-sidebar');
             const overlay = document.getElementById('cart-overlay');
@@ -729,28 +1192,10 @@
             }
         }
 
-        function addToCart(productId) {
-            const allProducts = [...products, ...newArrivals];
-            const product = allProducts.find(p => p.id === productId);
-            
-            if (product) {
-                cart.push(product);
-                updateCartUI();
-                
-                // Show toast notification
-                showToast(`${product.name} added to cart!`);
-            }
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark text-white px-6 py-3 rounded-full shadow-lg z-[70] text-sm font-medium animate-bounce';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 2000);
+        function addToCart(id, name, price, image) {
+            cart.push({ id, name, price, image });
+            updateCartUI();
+            showToast(`${name} added to cart!`);
         }
 
         function removeFromCart(index) {
@@ -763,15 +1208,12 @@
             const cartCount = document.getElementById('cart-count');
             const cartTotal = document.getElementById('cart-total');
             
-            // Update Badge
             cartCount.innerText = cart.length;
             cartCount.classList.toggle('opacity-0', cart.length === 0);
 
-            // Calculate Total
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             cartTotal.innerText = '$' + total.toFixed(2);
 
-            // Render Items
             if (cart.length === 0) {
                 cartContainer.innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
@@ -781,13 +1223,13 @@
                 `;
             } else {
                 cartContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex gap-3 items-center bg-white p-2 md:p-3 rounded-xl shadow-sm border border-gray-100">
-                        <img src="${item.image}" class="w-12 h-12 md:w-16 md:h-16 object-cover rounded-lg">
+                    <div class="flex gap-3 items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <img src="${item.image}" class="w-14 h-14 md:w-16 md:h-16 object-cover rounded-lg">
                         <div class="flex-1 min-w-0">
                             <h4 class="font-serif font-bold text-xs md:text-sm truncate">${item.name}</h4>
                             <p class="text-accent text-xs md:text-sm">$${item.price.toFixed(2)}</p>
                         </div>
-                        <button onclick="removeFromCart(${index})" class="text-gray-400 hover:text-rose p-2 flex-shrink-0">
+                        <button onclick="removeFromCart(${index})" class="text-gray-400 hover:text-rose p-2 hover-trigger flex-shrink-0">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -796,119 +1238,81 @@
             lucide.createIcons();
         }
 
-        // --- Testimonials Slider ---
-        let currentTestimonial = 0;
-        function initTestimonials() {
-            const container = document.getElementById('testimonial-container');
-            const dotsContainer = document.getElementById('testimonial-dots');
-
-            function render() {
-                container.innerHTML = `
-                    <div class="transition-opacity duration-500 px-2">
-                        <div class="flex justify-center mb-4 md:mb-6 text-accent gap-1">
-                            ${Array(5).fill('<i data-lucide="star" class="w-4 h-4 md:w-5 md:h-5 fill-current"></i>').join('')}
-                        </div>
-                        <p class="text-base md:text-xl lg:text-2xl text-gray-600 italic mb-6 md:mb-8 leading-relaxed">"${testimonials[currentTestimonial].text}"</p>
-                        <div>
-                            <h4 class="font-serif font-bold text-base md:text-lg">${testimonials[currentTestimonial].author}</h4>
-                            <p class="text-xs md:text-sm text-gray-500">${testimonials[currentTestimonial].role}</p>
-                        </div>
-                    </div>
-                `;
-                
-                dotsContainer.innerHTML = testimonials.map((_, idx) => `
-                    <button onclick="setTestimonial(${idx})" class="w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors duration-300 ${idx === currentTestimonial ? 'bg-accent' : 'bg-gray-300'}"></button>
-                `).join('');
-                lucide.createIcons();
-            }
-
-            window.setTestimonial = (index) => {
-                currentTestimonial = index;
-                render();
-            };
-
-            // Auto rotate
-            setInterval(() => {
-                currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-                render();
-            }, 5000);
-
-            render();
-        }
-
-        // --- Navbar Scroll Effect ---
-        function initNavbar() {
-            const navbar = document.getElementById('navbar');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm');
-                    navbar.classList.remove('bg-transparent', 'py-3');
-                    navbar.classList.add('py-2');
-                } else {
-                    navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-2');
-                    navbar.classList.add('bg-transparent', 'py-3');
-                }
-            });
-        }
-
-        // --- Mobile Menu ---
-        function initMobileMenu() {
-            const btn = document.getElementById('mobile-menu-btn');
-            const closeBtn = document.getElementById('close-menu-btn');
-            const menu = document.getElementById('mobile-menu');
-            const links = document.querySelectorAll('.mobile-menu-link');
-            let isOpen = false;
-
-            function toggleMenu() {
-                isOpen = !isOpen;
-                if (isOpen) {
-                    menu.classList.remove('translate-x-full');
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    menu.classList.add('translate-x-full');
-                    document.body.style.overflow = '';
-                }
-            }
-
-            btn.addEventListener('click', toggleMenu);
-            closeBtn.addEventListener('click', toggleMenu);
+        // ==================== TESTIMONIALS SLIDER ====================
+        function setTestimonial(index) {
+            currentTestimonial = index;
             
-            links.forEach(link => {
-                link.addEventListener('click', toggleMenu);
+            document.getElementById('testimonial-text').innerText = `"${testimonials[index].text}"`;
+            document.getElementById('testimonial-author').innerText = testimonials[index].author;
+            document.getElementById('testimonial-role').innerText = testimonials[index].role;
+            
+            // Update dots
+            document.querySelectorAll('.testimonial-dot').forEach((dot, i) => {
+                dot.classList.toggle('bg-accent', i === index);
+                dot.classList.toggle('bg-gray-300', i !== index);
             });
         }
 
-        // --- Horizontal Slider Controls ---
-        function initSlider() {
-            const slider = document.getElementById('new-arrivals-slider');
-            const prevBtn = document.getElementById('slider-prev');
-            const nextBtn = document.getElementById('slider-next');
+        // Auto rotate testimonials
+        setInterval(() => {
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            setTestimonial(currentTestimonial);
+        }, 5000);
 
-            nextBtn.addEventListener('click', () => {
-                slider.scrollBy({ left: window.innerWidth < 768 ? 170 : 300, behavior: 'smooth' });
-            });
+        // ==================== SLIDER CONTROLS ====================
+        document.getElementById('slider-next').addEventListener('click', () => {
+            document.getElementById('new-arrivals-slider').scrollBy({ left: 300, behavior: 'smooth' });
+        });
 
-            prevBtn.addEventListener('click', () => {
-                slider.scrollBy({ left: window.innerWidth < 768 ? -170 : -300, behavior: 'smooth' });
-            });
+        document.getElementById('slider-prev').addEventListener('click', () => {
+            document.getElementById('new-arrivals-slider').scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        // ==================== MOBILE MENU ====================
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMobileMenu() {
+            const isOpen = !mobileMenu.classList.contains('translate-x-full');
+            if (isOpen) {
+                mobileMenu.classList.add('translate-x-full');
+                document.body.style.overflow = '';
+            } else {
+                mobileMenu.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            }
         }
 
-        // --- Scroll Animations (Intersection Observer) ---
-        function initScrollAnimations() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        menuBtn.addEventListener('click', toggleMobileMenu);
+        closeBtn.addEventListener('click', toggleMobileMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', toggleMobileMenu));
 
-            document.querySelectorAll('.fade-in-section').forEach(section => {
-                observer.observe(section);
-            });
+        // ==================== COUNTDOWN ====================
+        function updateCountdown() {
+            const endTime = new Date().getTime() + (2 * 24 * 60 * 60 * 1000) + (14 * 60 * 60 * 1000) + (45 * 60 * 1000);
+            
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('days').innerText = days.toString().padStart(2, '0');
+                document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            }, 1000);
         }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateCursorListeners();
+            updateCountdown();
+        });
     </script>
 </body>
 </html>
-
-  
