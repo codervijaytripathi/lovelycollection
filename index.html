@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LovelyCollection | Premium Fashion</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f6f2f1',
+                        accent: '#e8a7a2',
+                        rose: '#d98c8c',
+                        dark: '#2b2b2b',
+                        card: '#ffffff',
+                        beige: '#f0e6e4',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Poppins"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.06)',
+                        'lift': '0 20px 40px -5px rgba(0,0,0,0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f6f2f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e8a7a2;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d98c8c;
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Animation Utilities */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, visibility;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* Hide scrollbar for horizontal sliders but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Loader */
+        .loader {
+            border-top-color: #e8a7a2;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-primary text-dark font-sans antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent py-4">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" class="font-serif text-2xl lg:text-3xl font-bold tracking-wide text-dark z-50">
+                Lovely<span class="text-accent">Collection</span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center space-x-8 font-medium text-sm tracking-wide">
+                <a href="#" class="hover:text-accent transition-colors">Home</a>
+                <a href="#women" class="hover:text-accent transition-colors">Women</a>
+                <a href="#men" class="hover:text-accent transition-colors">Men</a>
+                <a href="#kids" class="hover:text-accent transition-colors">Kids</a>
+                <a href="#accessories" class="hover:text-accent transition-colors">Accessories</a>
+                <a href="#sale" class="text-rose font-semibold hover:text-accent transition-colors">Sale</a>
+                <a href="#contact" class="hover:text-accent transition-colors">Contact</a>
+            </div>
+
+            <!-- Icons -->
+            <div class="hidden lg:flex items-center space-x-6">
+                <button class="hover:text-accent transition-colors"><i data-lucide="search" class="w-5 h-5"></i></button>
+                <button class="hover:text-accent transition-colors relative group">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleCart()" class="hover:text-accent transition-colors relative">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="lg:hidden z-50 text-dark focus:outline-none">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center space-y-8 lg:hidden">
+            <a href="#" class="font-serif text-2xl hover:text-accent">Home</a>
+            <a href="#women" class="font-serif text-2xl hover:text-accent">Women</a>
+            <a href="#men" class="font-serif text-2xl hover:text-accent">Men</a>
+            <a href="#kids" class="font-serif text-2xl hover:text-accent">Kids</a>
+            <a href="#accessories" class="font-serif text-2xl hover:text-accent">Accessories</a>
+            <a href="#sale" class="font-serif text-2xl text-rose">Sale</a>
+            <div class="flex space-x-8 mt-8">
+                <button><i data-lucide="search" class="w-6 h-6"></i></button>
+                <button><i data-lucide="user" class="w-6 h-6"></i></button>
+                <button onclick="toggleCart()"><i data-lucide="shopping-bag" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="font-serif text-2xl font-bold">Your Cart</h2>
+            <button onclick="toggleCart()" class="hover:text-accent"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-6">
+            <!-- Cart items injected here -->
+            <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                <i data-lucide="shopping-bag" class="w-12 h-12 mb-4 opacity-50"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="p-6 border-t border-gray-100 bg-gray-50">
+            <div class="flex justify-between mb-4 font-medium text-lg">
+                <span>Subtotal</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="w-full bg-dark text-white py-4 rounded-xl font-medium hover:bg-accent transition-colors duration-300">Checkout</button>
+        </div>
+    </div>
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[55] hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <!-- Background Shapes -->
+        <div class="absolute top-0 right-0 w-2/3 h-full bg-beige rounded-bl-[100px] -z-10 hidden lg:block"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl -z-10"></div>
+
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center w-full">
+            <div class="space-y-8 fade-in-section">
+                <span class="text-accent font-medium tracking-widest uppercase text-sm">New Summer Collection 2024</span>
+                <h1 class="font-serif text-5xl lg:text-7xl font-bold leading-tight text-dark">
+                    Redefine Your <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-rose">Fashion</span>
+                </h1>
+                <p class="text-gray-600 text-lg max-w-md leading-relaxed">
+                    Discover the latest trends in soft luxury. Elegant designs crafted for the modern individual who values comfort and style.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#shop" class="px-8 py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 text-center shadow-lg hover:shadow-xl hover:-translate-y-1">
+                        Shop Now
+                    </a>
+                    <a href="#lookbook" class="px-8 py-4 bg-white text-dark border border-gray-200 rounded-full font-medium hover:border-accent hover:text-accent transition-all duration-300 text-center">
+                        Explore Lookbook
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="flex gap-8 pt-8 border-t border-gray-200">
+                    <div>
+                        <h4 class="font-serif text-2xl font-bold">20k+</h4>
+                        <p class="text-sm text-gray-500">Happy Customers</p>
+                    </div>
+                    <div>
+                        <h4 class="font-serif text-2xl font-bold">500+</h4>
+                        <p class="text-sm text-gray-500">Unique Styles</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative h-full flex items-center justify-center lg:justify-end fade-in-section delay-200">
+                <!-- Decorative Circle -->
+                <div class="absolute w-[90%] h-[90%] bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-2xl -z-10"></div>
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format&fit=crop" 
+                     alt="Fashion Model" 
+                     class="w-full max-w-lg object-cover rounded-t-[200px] rounded-b-[40px] shadow-2xl mask-image-gradient">
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Section -->
+    <section id="shop" class="py-20 max-w-[1440px] mx-auto px-6 lg:px-12">
+        <div class="text-center mb-16 fade-in-section">
+            <h2 class="font-serif text-4xl font-bold mb-4">Shop by Category</h2>
+            <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Category 1 -->
+            <div class="group cursor-pointer fade-in-section">
+                <div class="relative overflow-hidden rounded-2xl aspect-[3/4] mb-4">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop" alt="Women" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-xl font-bold">Women</h3>
+                        <p class="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">120 Items</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Category 2 -->
+            <div class="group cursor-pointer fade-in-section delay-100">
+                <div class="relative overflow-hidden rounded-2xl aspect-[3/4] mb-4">
+                    <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?q=80&w=600&auto=format&fit=crop" alt="Men" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-xl font-bold">Men</h3>
+                        <p class="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">85 Items</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Category 3 -->
+            <div class="group cursor-pointer fade-in-section delay-200">
+                <div class="relative overflow-hidden rounded-2xl aspect-[3/4] mb-4">
+                    <img src="https://images.unsplash.com/photo-1519238263496-636190948abc?q=80&w=600&auto=format&fit=crop" alt="Kids" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-xl font-bold">Kids</h3>
+                        <p class="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">45 Items</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Category 4 -->
+            <div class="group cursor-pointer fade-in-section delay-300">
+                <div class="relative overflow-hidden rounded-2xl aspect-[3/4] mb-4">
+                    <img src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?q=80&w=600&auto=format&fit=crop" alt="Accessories" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    <div class="absolute bottom-4 left-4 text-white">
+                        <h3 class="font-serif text-xl font-bold">Accessories</h3>
+                        <p class="text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">200 Items</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="flex justify-between items-end mb-12 fade-in-section">
+                <div>
+                    <span class="text-accent font-medium tracking-widest uppercase text-sm">Top Picks</span>
+                    <h2 class="font-serif text-4xl font-bold mt-2">Best Sellers</h2>
+                </div>
+                <a href="#" class="hidden md:flex items-center gap-2 text-dark hover:text-accent transition-colors font-medium">
+                    View All <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="best-sellers-grid">
+                <!-- Products injected via JS -->
+            </div>
+            
+            <div class="mt-12 text-center md:hidden">
+                <a href="#" class="inline-flex items-center gap-2 text-dark hover:text-accent transition-colors font-medium border-b border-dark pb-1">
+                    View All Collection <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Arrivals Slider -->
+    <section class="py-20 bg-primary overflow-hidden">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="flex justify-between items-center mb-12 fade-in-section">
+                <h2 class="font-serif text-4xl font-bold">New Arrivals</h2>
+                <div class="flex gap-4">
+                    <button id="slider-prev" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <button id="slider-next" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300">
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <div id="new-arrivals-slider" class="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-8">
+                    <!-- Slider items injected via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sale Banner -->
+    <section id="sale" class="py-20">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="bg-beige rounded-[40px] overflow-hidden relative fade-in-section">
+                <div class="grid md:grid-cols-2 gap-0">
+                    <div class="p-12 lg:p-20 flex flex-col justify-center items-start z-10">
+                        <span class="bg-rose text-white px-4 py-1 rounded-full text-sm font-bold mb-6">Limited Time Offer</span>
+                        <h2 class="font-serif text-5xl lg:text-7xl font-bold mb-6 leading-tight">Summer <br>Sale 50% Off</h2>
+                        <p class="text-gray-600 mb-8 max-w-md">Upgrade your wardrobe with our exclusive summer collection. Premium quality at unbeatable prices.</p>
+                        <button class="px-8 py-4 bg-dark text-white rounded-full font-medium hover:bg-accent transition-all duration-300 shadow-lg">
+                            Shop The Sale
+                        </button>
+                        
+                        <div class="flex gap-8 mt-12">
+                            <div class="text-center">
+                                <span class="block font-serif text-3xl font-bold" id="days">02</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wider">Days</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block font-serif text-3xl font-bold" id="hours">14</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wider">Hours</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block font-serif text-3xl font-bold" id="minutes">45</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-wider">Mins</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative h-[400px] md:h-auto">
+                        <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1000&auto=format&fit=crop" alt="Sale Model" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-beige via-transparent to-transparent md:bg-gradient-to-l"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-white">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12 text-center">
+            <h2 class="font-serif text-4xl font-bold mb-16 fade-in-section">What Our Clients Say</h2>
+            
+            <div class="relative max-w-4xl mx-auto fade-in-section">
+                <div id="testimonial-container" class="overflow-hidden">
+                    <!-- Testimonials injected via JS -->
+                </div>
+                
+                <div class="flex justify-center gap-2 mt-8" id="testimonial-dots">
+                    <!-- Dots injected via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Gallery -->
+    <section class="py-20 bg-primary">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="text-center mb-12 fade-in-section">
+                <h2 class="font-serif text-4xl font-bold mb-4">Follow Us @LovelyCollection</h2>
+                <p class="text-gray-600">Join our community for daily style inspiration</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <!-- Images -->
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section">
+                    <img src="https://images.unsplash.com/photo-1529139574466-a302d2d46a97?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section delay-100">
+                    <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section delay-200">
+                    <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section delay-300">
+                    <img src="https://images.unsplash.com/photo-1502716119720-b23a93e5fe1b?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section delay-100">
+                    <img src="https://images.unsplash.com/photo-1485968579169-a6e9dc7c575c?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <div class="group relative aspect-square overflow-hidden rounded-xl cursor-pointer fade-in-section delay-200">
+                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-accent/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i data-lucide="instagram" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-20">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="bg-dark rounded-[40px] p-12 lg:p-20 text-center relative overflow-hidden fade-in-section">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-accent rounded-full blur-3xl"></div>
+                    <div class="absolute left-0 bottom-0 w-64 h-64 bg-rose rounded-full blur-3xl"></div>
+                </div>
+                
+                <div class="relative z-10 max-w-2xl mx-auto">
+                    <h2 class="font-serif text-3xl lg:text-5xl font-bold text-white mb-6">Join Our Newsletter</h2>
+                    <p class="text-gray-300 mb-8">Subscribe to receive updates, access to exclusive deals, and more.</p>
+                    
+                    <form class="flex flex-col sm:flex-row gap-4" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                        <input type="email" placeholder="Enter your email address" class="flex-1 px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-accent transition-colors">
+                        <button type="submit" class="px-8 py-4 bg-accent text-white rounded-full font-bold hover:bg-rose transition-colors duration-300">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-beige pt-20 pb-10">
+        <div class="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Brand -->
+                <div class="space-y-6">
+                    <a href="#" class="font-serif text-2xl font-bold tracking-wide text-dark">
+                        Lovely<span class="text-accent">Collection</span>
+                    </a>
+                    <p class="text-gray-600 leading-relaxed">
+                        Redefining modern fashion with a touch of soft luxury. Quality, comfort, and style in every piece.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-dark hover:bg-accent hover:text-white transition-colors shadow-sm"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-dark hover:bg-accent hover:text-white transition-colors shadow-sm"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-dark hover:bg-accent hover:text-white transition-colors shadow-sm"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-serif text-lg font-bold mb-6">Quick Links</h4>
+                    <ul class="space-y-4 text-gray-600">
+                        <li><a href="#" class="hover:text-accent transition-colors">Home</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Shop</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help -->
+                <div>
+                    <h4 class="font-serif text-lg font-bold mb-6">Help</h4>
+                    <ul class="space-y-4 text-gray-600">
+                        <li><a href="#" class="hover:text-accent transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Returns</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">FAQs</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Track Order</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-serif text-lg font-bold mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-accent mt-1"></i>
+                            <span>123 Fashion Ave, Design District,<br>New York, NY 10012</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="mail" class="w-5 h-5 text-accent"></i>
+                            <span>hello@lovelycollection.com</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-accent"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm">&copy; 2024 LovelyCollection. All rights reserved.</p>
+                <div class="flex gap-6 text-sm text-gray-500">
+                    <a href="#" class="hover:text-dark">Privacy Policy</a>
+                    <a href="#" class="hover:text-dark">Terms & Conditions</a>
+                </div>
+                <div class="flex gap-2">
+                    <!-- Payment Icons (Simulated with generic cards) -->
+                    <div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center text-[10px] font-bold text-gray-400">VISA</div>
+                    <div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center text-[10px] font-bold text-gray-400">MC</div>
+                    <div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center text-[10px] font-bold text-gray-400">AMEX</div>
+                    <div class="w-10 h-6 bg-white rounded shadow-sm flex items-center justify-center text-[10px] font-bold text-gray-400">PP</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Data ---
+        const products = [
+            { id: 1, name: "Linen Blend Blazer", price: 129.00, category: "Women", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" },
+            { id: 2, name: "Silk Evening Dress", price: 249.00, category: "Women", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop" },
+            { id: 3, name: "Cotton Casual Shirt", price: 59.00, category: "Men", image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop" },
+            { id: 4, name: "Tailored Trousers", price: 89.00, category: "Men", image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop" },
+            { id: 5, name: "Summer Floral Top", price: 45.00, category: "Women", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop" },
+            { id: 6, name: "Classic Denim Jacket", price: 110.00, category: "Unisex", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop" },
+            { id: 7, name: "Knit Sweater", price: 75.00, category: "Women", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop" },
+            { id: 8, name: "Leather Belt", price: 35.00, category: "Accessories", image: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop" }
+        ];
+
+        const newArrivals = [
+            { id: 9, name: "Pastel Midi Skirt", price: 85.00, image: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop" },
+            { id: 10, name: "Oversized Sunglasses", price: 120.00, image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop" },
+            { id: 11, name: "Straw Handbag", price: 65.00, image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop" },
+            { id: 12, name: "White Sneakers", price: 95.00, image: "https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop" },
+            { id: 13, name: "Gold Necklace", price: 150.00, image: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop" },
+            { id: 14, name: "Summer Hat", price: 40.00, image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop" }
+        ];
+
+        const testimonials = [
+            { text: "The quality of the fabrics is absolutely stunning. I feel so elegant and comfortable in my new dress. Highly recommend!", author: "Sarah Jenkins", role: "Fashion Blogger" },
+            { text: "Fast shipping and beautiful packaging. The attention to detail in the stitching is what sets this brand apart.", author: "Michael Chen", role: "Verified Buyer" },
+            { text: "I love the minimalist aesthetic. The colors are exactly as shown on the website. My new favorite store!", author: "Emma Wilson", role: "Interior Designer" }
+        ];
+
+        let cart = [];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderProducts();
+            renderNewArrivals();
+            initTestimonials();
+            initScrollAnimations();
+            initNavbar();
+            initMobileMenu();
+            initSlider();
+        });
+
+        // --- Rendering Functions ---
+        function renderProducts() {
+            const grid = document.getElementById('best-sellers-grid');
+            grid.innerHTML = products.map(product => `
+                <div class="group fade-in-section">
+                    <div class="relative overflow-hidden rounded-2xl bg-gray-100 mb-4 aspect-[3/4]">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <button onclick="addToCart(${product.id})" class="absolute bottom-4 left-4 right-4 bg-white text-dark py-3 rounded-xl font-medium opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:bg-dark hover:text-white">
+                            Add to Cart
+                        </button>
+                        <button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors opacity-0 group-hover:opacity-100 duration-300">
+                            <i data-lucide="heart" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-serif text-lg font-bold text-dark">${product.name}</h3>
+                            <p class="text-sm text-gray-500">${product.category}</p>
+                        </div>
+                        <span class="font-medium text-accent">$${product.price.toFixed(2)}</span>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderNewArrivals() {
+            const slider = document.getElementById('new-arrivals-slider');
+            slider.innerHTML = newArrivals.map(item => `
+                <div class="min-w-[280px] md:min-w-[320px] snap-start">
+                    <div class="relative overflow-hidden rounded-2xl bg-gray-100 mb-4 aspect-[3/4] group">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    </div>
+                    <h3 class="font-serif text-lg font-bold text-dark">${item.name}</h3>
+                    <p class="text-accent font-medium">$${item.price.toFixed(2)}</p>
+                </div>
+            `).join('');
+        }
+
+        // --- Cart Logic ---
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+            
+            if (isOpen) {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            } else {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                // Force reflow
+                void overlay.offsetWidth;
+                overlay.classList.add('opacity-100');
+            }
+        }
+
+        function addToCart(productId) {
+            const allProducts = [...products, ...newArrivals];
+            const product = allProducts.find(p => p.id === productId);
+            
+            if (product) {
+                cart.push(product);
+                updateCartUI();
+                toggleCart(); // Open cart to show feedback
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            
+            // Update Badge
+            cartCount.innerText = cart.length;
+            cartCount.classList.toggle('opacity-0', cart.length === 0);
+
+            // Calculate Total
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            cartTotal.innerText = '$' + total.toFixed(2);
+
+            // Render Items
+            if (cart.length === 0) {
+                cartContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                        <i data-lucide="shopping-bag" class="w-12 h-12 mb-4 opacity-50"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+            } else {
+                cartContainer.innerHTML = cart.map((item, index) => `
+                    <div class="flex gap-4 items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+                        <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-serif font-bold text-sm">${item.name}</h4>
+                            <p class="text-accent text-sm">$${item.price.toFixed(2)}</p>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-gray-400 hover:text-rose p-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        // --- Testimonials Slider ---
+        let currentTestimonial = 0;
+        function initTestimonials() {
+            const container = document.getElementById('testimonial-container');
+            const dotsContainer = document.getElementById('testimonial-dots');
+
+            function render() {
+                container.innerHTML = `
+                    <div class="transition-opacity duration-500">
+                        <div class="flex justify-center mb-6 text-accent">
+                            ${Array(5).fill('<i data-lucide="star" class="w-5 h-5 fill-current"></i>').join('')}
+                        </div>
+                        <p class="text-xl lg:text-2xl text-gray-600 italic mb-8 leading-relaxed">"${testimonials[currentTestimonial].text}"</p>
+                        <div>
+                            <h4 class="font-serif font-bold text-lg">${testimonials[currentTestimonial].author}</h4>
+                            <p class="text-sm text-gray-500">${testimonials[currentTestimonial].role}</p>
+                        </div>
+                    </div>
+                `;
+                
+                dotsContainer.innerHTML = testimonials.map((_, idx) => `
+                    <button onclick="setTestimonial(${idx})" class="w-3 h-3 rounded-full transition-colors duration-300 ${idx === currentTestimonial ? 'bg-accent' : 'bg-gray-300'}"></button>
+                `).join('');
+                lucide.createIcons();
+            }
+
+            window.setTestimonial = (index) => {
+                currentTestimonial = index;
+                render();
+            };
+
+            // Auto rotate
+            setInterval(() => {
+                currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+                render();
+            }, 5000);
+
+            render();
+        }
+
+        // --- Navbar Scroll Effect ---
+        function initNavbar() {
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
+                    navbar.classList.remove('bg-transparent', 'py-4');
+                    navbar.classList.add('py-2');
+                } else {
+                    navbar.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm', 'py-2');
+                    navbar.classList.add('bg-transparent', 'py-4');
+                }
+            });
+        }
+
+        // --- Mobile Menu ---
+        function initMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            let isOpen = false;
+
+            btn.addEventListener('click', () => {
+                isOpen = !isOpen;
+                if (isOpen) {
+                    menu.classList.remove('translate-x-full');
+                    btn.innerHTML = '<i data-lucide="x" class="w-6 h-6"></i>';
+                } else {
+                    menu.classList.add('translate-x-full');
+                    btn.innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+                }
+                lucide.createIcons();
+            });
+        }
+
+        // --- Horizontal Slider Controls ---
+        function initSlider() {
+            const slider = document.getElementById('new-arrivals-slider');
+            const prevBtn = document.getElementById('slider-prev');
+            const nextBtn = document.getElementById('slider-next');
+
+            nextBtn.addEventListener('click', () => {
+                slider.scrollBy({ left: 320, behavior: 'smooth' });
+            });
+
+            prevBtn.addEventListener('click', () => {
+                slider.scrollBy({ left: -320, behavior: 'smooth' });
+            });
+        }
+
+        // --- Scroll Animations (Intersection Observer) ---
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in-section').forEach(section => {
+                observer.observe(section);
+            });
+        }
+    </script>
+</body>
+</html>
