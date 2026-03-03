@@ -291,6 +291,192 @@
                 padding: 0.4rem 0;
             }
         }
+
+        /* ===== PRODUCT MODAL STYLES ===== */
+        .product-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .product-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .product-modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e8a7a2;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            cursor: zoom-in;
+        }
+
+        .modal-image-container.zoomed {
+            cursor: zoom-out;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .zoom-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .zoomed-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .zoom-overlay.active .zoomed-image {
+            transform: scale(1);
+        }
+
+        .zoom-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-close:hover {
+            background: #e8a7a2;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .product-modal {
+                padding: 0;
+            }
+            
+            .modal-content {
+                border-radius: 0;
+                max-height: 100vh;
+                height: 100vh;
+            }
+            
+            .modal-close {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+        }
+
+        /* Product card cursor pointer */
+        .product-card {
+            cursor: pointer;
+        }
+        /* Main breathing animation */
+@keyframes breathe {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+.breathing-animation {
+    animation: breathe 4s ease-in-out infinite;
+    transform-origin: center center;
+}
+
+/* Optional: Background glow breathing */
+@keyframes glow-breathe {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
+}
+
+.breathing-glow {
+    animation: glow-breathe 4s ease-in-out infinite;
+}
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">
@@ -304,96 +490,241 @@
         <i data-lucide="arrow-up" class="w-5 h-5"></i>
     </div>
 
-    <!-- ==================== 1. HEADER (Sticky & Clean) ==================== -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-3 md:py-4 bg-transparent">
-        <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12 flex justify-between items-center">
-            <!-- Logo -->
-            <a href="#" class="font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-dark z-50 whitespace-nowrap hover-trigger">
-                Lovely<span class="text-accent">Collection</span>
-            </a>
-            
-            <!-- Desktop Navigation -->
-            <div class="hidden lg:flex items-center space-x-8 text-sm font-medium tracking-wide">
-                <a href="#" class="hover:text-accent transition-colors hover-trigger">Home</a>
-                <a href="#women" class="hover:text-accent transition-colors hover-trigger">Women</a>
-                <a href="#men" class="hover:text-accent transition-colors hover-trigger">Men</a>
-                <a href="#kids" class="hover:text-accent transition-colors hover-trigger">Kids</a>
-                <a href="#accessories" class="hover:text-accent transition-colors hover-trigger">Accessories</a>
-                <a href="#sale" class="text-rose font-semibold hover:text-accent transition-colors hover-trigger">Sale</a>
-                <a href="#contact" class="hover:text-accent transition-colors hover-trigger">Contact</a>
-            </div>
-
-            <!-- Icons -->
-            <div class="flex items-center space-x-2 md:space-x-4">
-                <button class="hover:text-accent transition-colors p-1.5 md:p-2 hover-trigger">
-                    <i data-lucide="search" class="w-5 h-5"></i>
-                </button>
-                <button class="hover:text-accent transition-colors relative group hidden md:block hover-trigger">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                </button>
-                <button onclick="toggleCart()" class="hover:text-accent transition-colors relative p-1.5 md:p-2 hover-trigger">
-                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
-                </button>
-                
-                <!-- Mobile Menu Button - CHHOTA AUR SAHI -->
-                <button id="mobile-menu-btn" class="lg:hidden p-1.5 hover-trigger rounded-lg hover:bg-gray-100 transition-colors">
-                    <i data-lucide="menu" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu Overlay - CHHOTA AUR COMPACT -->
-    <div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 flex flex-col lg:hidden">
-        <!-- Close Button -->
-        <div class="flex justify-end p-4">
-            <button id="close-menu-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors hover-trigger">
+    <!-- ==================== PRODUCT MODAL ==================== -->
+    <div id="product-modal" class="product-modal">
+        <div class="modal-backdrop" onclick="closeProductModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close hover-trigger" onclick="closeProductModal()">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-        </div>
-        
-        <!-- Menu Items - CHHOTE AUR SAHI -->
-        <div class="flex-1 flex flex-col justify-center items-center px-6 pb-20">
-            <a href="#" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Home</a>
-            <a href="#women" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Women</a>
-            <a href="mens.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Men</a>
-            <a href="#kids" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Kids</a>
-            <a href="#accessories" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Accessories</a>
-            <a href="#sale" class="mobile-menu-item font-serif text-rose hover:text-accent transition-colors mobile-link hover-trigger">Sale</a>
-            <a href="#contact" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Contact</a>
             
-            <!-- Mobile Login/Register - CHHOTE BUTTONS -->
-            <div class="flex gap-3 mt-6">
-                <button class="px-5 py-2 text-sm border border-dark rounded-full hover:bg-dark hover:text-white transition-colors hover-trigger">Login</button>
-                <button class="px-5 py-2 text-sm bg-accent text-white rounded-full hover:bg-rose transition-colors hover-trigger">Register</button>
+            <div class="grid md:grid-cols-2 gap-0">
+                <!-- Image Section -->
+                <div class="relative bg-gray-100 p-4 md:p-8">
+                    <div class="modal-image-container aspect-[3/4] bg-white rounded-2xl overflow-hidden shadow-lg" onclick="zoomImage()">
+                        <img id="modal-image" src="" alt="" class="modal-image w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Thumbnail Gallery -->
+                    <div class="flex gap-2 mt-4 justify-center">
+                        <button class="w-16 h-16 rounded-lg overflow-hidden border-2 border-accent opacity-100 transition-all hover-trigger" onclick="changeModalImage(0)">
+                            <img id="thumb-0" src="" class="w-full h-full object-cover">
+                        </button>
+                        <button class="w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 hover:opacity-100 transition-all hover-trigger" onclick="changeModalImage(1)">
+                            <img id="thumb-1" src="" class="w-full h-full object-cover">
+                        </button>
+                        <button class="w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent opacity-60 hover:opacity-100 transition-all hover-trigger" onclick="changeModalImage(2)">
+                            <img id="thumb-2" src="" class="w-full h-full object-cover">
+                        </button>
+                    </div>
+                    
+                    <div class="absolute top-6 left-6 md:top-10 md:left-10">
+                        <span id="modal-badge" class="bg-accent text-white px-3 py-1 rounded-full text-xs font-bold">New Arrival</span>
+                    </div>
+                </div>
+
+                <!-- Details Section -->
+                <div class="p-6 md:p-8 flex flex-col justify-center">
+                    <div class="mb-6">
+                        <p id="modal-category" class="text-accent text-sm font-medium tracking-wider uppercase mb-2">Women</p>
+                        <h2 id="modal-title" class="font-serif text-2xl md:text-3xl font-bold text-dark mb-2">Product Name</h2>
+                        <div class="flex items-center gap-4 mb-4">
+                            <span id="modal-price" class="text-2xl font-bold text-accent">$129.00</span>
+                            <span class="text-gray-400 line-through text-lg">$159.00</span>
+                            <span class="bg-rose/10 text-rose px-2 py-1 rounded text-xs font-bold">-20%</span>
+                        </div>
+                        
+                        <!-- Rating -->
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="flex text-accent">
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            </div>
+                            <span class="text-sm text-gray-500">(128 reviews)</span>
+                        </div>
+                    </div>
+
+                    <p id="modal-description" class="text-gray-600 leading-relaxed mb-6 text-sm md:text-base">
+                        Experience ultimate comfort with our premium collection. Crafted with high-quality materials for a perfect fit and lasting durability.
+                    </p>
+
+                    <!-- Size Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-dark mb-3">Select Size</label>
+                        <div class="flex gap-2 flex-wrap">
+                            <button class="size-btn w-10 h-10 rounded-lg border-2 border-gray-200 flex items-center justify-center text-sm font-medium hover:border-accent hover:bg-accent/5 transition-all hover-trigger" onclick="selectSize(this)">XS</button>
+                            <button class="size-btn w-10 h-10 rounded-lg border-2 border-accent bg-accent/10 text-accent flex items-center justify-center text-sm font-medium transition-all hover-trigger" onclick="selectSize(this)">S</button>
+                            <button class="size-btn w-10 h-10 rounded-lg border-2 border-gray-200 flex items-center justify-center text-sm font-medium hover:border-accent hover:bg-accent/5 transition-all hover-trigger" onclick="selectSize(this)">M</button>
+                            <button class="size-btn w-10 h-10 rounded-lg border-2 border-gray-200 flex items-center justify-center text-sm font-medium hover:border-accent hover:bg-accent/5 transition-all hover-trigger" onclick="selectSize(this)">L</button>
+                            <button class="size-btn w-10 h-10 rounded-lg border-2 border-gray-200 flex items-center justify-center text-sm font-medium hover:border-accent hover:bg-accent/5 transition-all hover-trigger" onclick="selectSize(this)">XL</button>
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-dark mb-3">Color</label>
+                        <div class="flex gap-3">
+                            <button class="w-8 h-8 rounded-full bg-gray-800 border-2 border-white shadow-md ring-2 ring-gray-800 hover-trigger" onclick="selectColor(this)"></button>
+                            <button class="w-8 h-8 rounded-full bg-blue-600 border-2 border-white shadow-md hover:ring-2 hover:ring-blue-600 transition-all hover-trigger" onclick="selectColor(this)"></button>
+                            <button class="w-8 h-8 rounded-full bg-rose-400 border-2 border-white shadow-md hover:ring-2 hover:ring-rose-400 transition-all hover-trigger" onclick="selectColor(this)"></button>
+                            <button class="w-8 h-8 rounded-full bg-beige border-2 border-gray-300 shadow-md hover:ring-2 hover:ring-gray-400 transition-all hover-trigger" onclick="selectColor(this)"></button>
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-dark mb-3">Quantity</label>
+                        <div class="flex items-center gap-3">
+                            <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors hover-trigger" onclick="updateQuantity(-1)">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                            </button>
+                            <span id="modal-quantity" class="w-12 text-center font-medium text-lg">1</span>
+                            <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors hover-trigger" onclick="updateQuantity(1)">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mt-auto">
+                        <button id="modal-add-to-cart" class="flex-1 bg-dark text-white py-4 rounded-xl font-medium hover:bg-accent transition-all duration-300 flex items-center justify-center gap-2 hover-trigger shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                            Add to Cart
+                        </button>
+                        <button class="w-14 h-14 border-2 border-gray-200 rounded-xl flex items-center justify-center text-dark hover:border-rose hover:text-rose transition-all hover-trigger">
+                            <i data-lucide="heart" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <i data-lucide="truck" class="w-5 h-5 mx-auto mb-1 text-accent"></i>
+                            <p class="text-xs text-gray-500">Free Shipping</p>
+                        </div>
+                        <div>
+                            <i data-lucide="refresh-cw" class="w-5 h-5 mx-auto mb-1 text-accent"></i>
+                            <p class="text-xs text-gray-500">Easy Returns</p>
+                        </div>
+                        <div>
+                            <i data-lucide="shield-check" class="w-5 h-5 mx-auto mb-1 text-accent"></i>
+                            <p class="text-xs text-gray-500">Secure Pay</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
-            <h2 class="font-serif text-xl md:text-2xl font-bold">Your Cart</h2>
-            <button onclick="toggleCart()" class="hover:text-accent p-2 hover-trigger">
-                <i data-lucide="x" class="w-6 h-6"></i>
+    <!-- Zoom Overlay -->
+    <div id="zoom-overlay" class="zoom-overlay" onclick="closeZoom()">
+        <button class="zoom-close hover-trigger" onclick="closeZoom()">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <img id="zoomed-image" src="" alt="" class="zoomed-image">
+    </div>
+
+   <!-- ==================== 1. HEADER (Sticky & Clean) ==================== -->
+<nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-3 md:py-4 bg-transparent">
+    <div class="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-12 flex justify-between items-center">
+        <!-- Logo -->
+        <a href="#" class="font-serif text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-dark z-50 whitespace-nowrap hover-trigger">
+            Lovely<span class="text-accent">Collection</span>
+        </a>
+        
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center space-x-8 text-sm font-medium tracking-wide">
+            <a href="#" class="hover:text-accent transition-colors hover-trigger">Home</a>
+            <a href="#women" class="hover:text-accent transition-colors hover-trigger">Women</a>
+            <a href="#men" class="hover:text-accent transition-colors hover-trigger">Men</a>
+            <a href="#kids" class="hover:text-accent transition-colors hover-trigger">Kids</a>
+            <a href="#accessories" class="hover:text-accent transition-colors hover-trigger">Accessories</a>
+            <a href="#sale" class="text-rose font-semibold hover:text-accent transition-colors hover-trigger">Sale</a>
+            <a href="#contact" class="hover:text-accent transition-colors hover-trigger">Contact</a>
+        </div>
+
+        <!-- Icons -->
+        <div class="flex items-center space-x-2 md:space-x-4">
+            <!-- WhatsApp Button (Black) - Search ki jagah -->
+            <a href="https://wa.me/1234567890" target="_blank" class="hover:text-green-600 transition-colors p-1.5 md:p-2 hover-trigger" title="Chat on WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-black">
+                    <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/>
+                    <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/>
+                    <path d="M14 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/>
+                    <path d="M9.5 15.5a5 5 0 0 0 5.5.5"/>
+                </svg>
+            </a>
+            
+            <button class="hover:text-accent transition-colors relative group hidden md:block hover-trigger">
+                <i data-lucide="user" class="w-5 h-5"></i>
+            </button>
+            
+            <button onclick="toggleCart()" class="hover:text-accent transition-colors relative p-1.5 md:p-2 hover-trigger">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+            </button>
+            
+            <!-- Menu Button - Desktop & Mobile dono pe dikh raha hai -->
+            <button id="mobile-menu-btn" class="p-1.5 hover-trigger rounded-lg hover:bg-gray-100 transition-colors">
+                <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
         </div>
-        <div id="cart-items" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-            <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
-                <i data-lucide="shopping-bag" class="w-12 h-12 mb-4 opacity-50"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="p-4 md:p-6 border-t border-gray-100 bg-gray-50">
-            <div class="flex justify-between mb-4 font-medium text-lg">
-                <span>Subtotal</span>
-                <span id="cart-total">$0.00</span>
-            </div>
-            <button class="w-full bg-dark text-white py-3 md:py-4 rounded-xl font-medium hover:bg-accent transition-colors duration-300 hover-trigger">Checkout</button>
+    </div>
+</nav>
+
+<!-- Mobile/Desktop Menu Overlay -->
+<div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Close Button -->
+    <div class="flex justify-end p-4">
+        <button id="close-menu-btn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors hover-trigger">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    
+    <!-- Menu Items -->
+    <div class="flex-1 flex flex-col justify-center items-center px-6 pb-20">
+        <a href="home.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Home</a>
+        <a href="trending.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Trending</a>
+        <a href="women.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Women</a>
+        <a href="mens.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Men</a>
+        <a href="kids.html" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Kids</a>
+        <a href="#sale" class="mobile-menu-item font-serif text-rose hover:text-accent transition-colors mobile-link hover-trigger">Sale</a>
+        <a href="#contact" class="mobile-menu-item font-serif hover:text-accent transition-colors mobile-link hover-trigger">Contact</a>
+        
+        <!-- Login/Register Buttons -->
+        <div class="flex gap-3 mt-6">
+            <button class="px-5 py-2 text-sm border border-dark rounded-full hover:bg-dark hover:text-white transition-colors hover-trigger">Login</button>
+            <button class="px-5 py-2 text-sm bg-accent text-white rounded-full hover:bg-rose transition-colors hover-trigger">Register</button>
         </div>
     </div>
-    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden transition-opacity duration-300 opacity-0"></div>
+</div>
+
+<!-- Cart Sidebar -->
+<div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center">
+        <h2 class="font-serif text-xl md:text-2xl font-bold">Your Cart</h2>
+        <button onclick="toggleCart()" class="hover:text-accent p-2 hover-trigger">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+    </div>
+    <div id="cart-items" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+        <div class="flex flex-col items-center justify-center h-full text-gray-400 mt-20">
+            <i data-lucide="shopping-bag" class="w-12 h-12 mb-4 opacity-50"></i>
+            <p>Your cart is empty</p>
+        </div>
+    </div>
+    <div class="p-4 md:p-6 border-t border-gray-100 bg-gray-50">
+        <div class="flex justify-between mb-4 font-medium text-lg">
+            <span>Subtotal</span>
+            <span id="cart-total">$0.00</span>
+        </div>
+        <button class="w-full bg-dark text-white py-3 md:py-4 rounded-xl font-medium hover:bg-accent transition-colors duration-300 hover-trigger">Checkout</button>
+    </div>
+</div>
+<div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden transition-opacity duration-300 opacity-0"></div>
 
     <!-- ==================== 2. HERO SECTION ==================== -->
     <header class="relative min-h-screen flex items-center pt-20 overflow-hidden">
@@ -431,13 +762,18 @@
                 </div>
             </div>
 
-            <div class="relative h-full flex items-center justify-center order-1 md:order-2 fade-in-section delay-200">
-                <div class="absolute w-[80%] h-[80%] bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-2xl -z-10"></div>
-                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop" 
-                     alt="Fashion Model" 
-                     class="w-full max-w-[280px] md:max-w-md lg:max-w-lg object-cover rounded-t-[120px] md:rounded-t-[200px] rounded-b-[30px] md:rounded-b-[40px] shadow-2xl">
-            </div>
+           <div class="relative h-full flex items-center justify-center order-1 md:order-2 fade-in-section delay-200">
+       <!-- Background glow -->
+            <div class="absolute w-[80%] h-[80%] bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-2xl -z-10 breathing-glow"></div>
+    
+    <!-- Breathing Image Container -->
+    <div class="breathing-animation relative">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop" 
+             alt="Fashion Model" 
+             class="w-full max-w-[280px] md:max-w-md lg:max-w-lg object-cover rounded-t-[120px] md:rounded-t-[200px] rounded-b-[30px] md:rounded-b-[40px] shadow-2xl">
+         </div>
         </div>
+      </div>
     </header>
 
     <!-- ==================== 3. SHOP BY CATEGORY ==================== -->
@@ -507,10 +843,10 @@
             <!-- YEH DIV ME CONTENT DIRECT HTML SE AAYEGA, JS SE NAHI -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 <!-- Product 1 -->
-                <div class="group fade-in-section hover-trigger">
+                <div class="group product-card fade-in-section hover-trigger" onclick="openProductModal(1, 'Linen Blend Blazer', 129, 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop', 'Women', 'Elevate your professional wardrobe with our premium linen blend blazer. Features a tailored fit, breathable fabric, and versatile styling options perfect for both office and casual wear.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop" alt="Linen Blend Blazer" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(1, 'Linen Blend Blazer', 129, 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(1, 'Linen Blend Blazer', 129, 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -527,10 +863,10 @@
                 </div>
 
                 <!-- Product 2 -->
-                <div class="group fade-in-section delay-100 hover-trigger">
+                <div class="group product-card fade-in-section delay-100 hover-trigger" onclick="openProductModal(2, 'Silk Evening Dress', 249, 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop', 'Women', 'Make a statement with our luxurious silk evening dress. Flowing silhouette, delicate draping, and exquisite craftsmanship make this the perfect choice for special occasions.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop" alt="Silk Evening Dress" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(2, 'Silk Evening Dress', 249, 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(2, 'Silk Evening Dress', 249, 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -547,10 +883,10 @@
                 </div>
 
                 <!-- Product 3 -->
-                <div class="group fade-in-section delay-200 hover-trigger">
+                <div class="group product-card fade-in-section delay-200 hover-trigger" onclick="openProductModal(3, 'Cotton Casual Shirt', 59, 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop', 'Men', 'Stay comfortable and stylish with our classic cotton casual shirt. Breathable fabric, modern fit, and versatile design make it a wardrobe essential for every season.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop" alt="Cotton Casual Shirt" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(3, 'Cotton Casual Shirt', 59, 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(3, 'Cotton Casual Shirt', 59, 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -567,10 +903,10 @@
                 </div>
 
                 <!-- Product 4 -->
-                <div class="group fade-in-section delay-300 hover-trigger">
+                <div class="group product-card fade-in-section delay-300 hover-trigger" onclick="openProductModal(4, 'Tailored Trousers', 89, 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop', 'Men', 'Sophisticated tailored trousers featuring premium fabric and impeccable construction. Perfect for business meetings or smart-casual occasions.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop" alt="Tailored Trousers" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(4, 'Tailored Trousers', 89, 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(4, 'Tailored Trousers', 89, 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -587,10 +923,10 @@
                 </div>
 
                 <!-- Product 5 -->
-                <div class="group fade-in-section hover-trigger">
+                <div class="group product-card fade-in-section hover-trigger" onclick="openProductModal(5, 'Summer Floral Top', 45, 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop', 'Women', 'Brighten up your summer wardrobe with our vibrant floral top. Lightweight, breathable, and featuring a flattering cut that pairs perfectly with jeans or skirts.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop" alt="Summer Floral Top" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(5, 'Summer Floral Top', 45, 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(5, 'Summer Floral Top', 45, 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -607,10 +943,10 @@
                 </div>
 
                 <!-- Product 6 -->
-                <div class="group fade-in-section delay-100 hover-trigger">
+                <div class="group product-card fade-in-section delay-100 hover-trigger" onclick="openProductModal(6, 'Classic Denim Jacket', 110, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop', 'Unisex', 'A timeless wardrobe staple, our classic denim jacket features premium wash, durable construction, and versatile styling that gets better with age.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop" alt="Classic Denim Jacket" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(6, 'Classic Denim Jacket', 110, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(6, 'Classic Denim Jacket', 110, 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -627,10 +963,10 @@
                 </div>
 
                 <!-- Product 7 -->
-                <div class="group fade-in-section delay-200 hover-trigger">
+                <div class="group product-card fade-in-section delay-200 hover-trigger" onclick="openProductModal(7, 'Knit Sweater', 75, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop', 'Women', 'Cozy up in our luxurious knit sweater. Soft, warm, and stylishly oversized, perfect for layering during cooler months.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop" alt="Knit Sweater" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(7, 'Knit Sweater', 75, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(7, 'Knit Sweater', 75, 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -647,10 +983,10 @@
                 </div>
 
                 <!-- Product 8 -->
-                <div class="group fade-in-section delay-300 hover-trigger">
+                <div class="group product-card fade-in-section delay-300 hover-trigger" onclick="openProductModal(8, 'Leather Belt', 35, 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop', 'Accessories', 'Complete your look with our genuine leather belt. Crafted from premium materials with a classic buckle design for timeless appeal.')">
                     <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3 aspect-[3/4] shadow-soft hover:shadow-lift transition-all duration-300">
                         <img src="https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop" alt="Leather Belt" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        <button onclick="addToCart(8, 'Leather Belt', 35, 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
+                        <button onclick="event.stopPropagation(); addToCart(8, 'Leather Belt', 35, 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-white text-dark py-2.5 md:py-3 rounded-lg md:rounded-xl font-medium shadow-lg hover:bg-dark hover:text-white transition-all duration-300 text-sm md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0">
                             Add to Cart
                         </button>
                         <button class="absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-dark hover:text-rose transition-colors shadow-sm">
@@ -693,10 +1029,10 @@
             <div class="relative">
                 <div id="new-arrivals-slider" class="flex gap-3 md:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-4 md:pb-8">
                     <!-- Slider items -->
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(9, 'Pastel Midi Skirt', 85, 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop', 'Women', 'Elegant pastel midi skirt perfect for spring and summer. Flowing fabric and flattering A-line silhouette.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop" alt="Pastel Midi Skirt" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(9, 'Pastel Midi Skirt', 85, 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(9, 'Pastel Midi Skirt', 85, 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -704,10 +1040,10 @@
                         <p class="text-accent font-medium text-sm md:text-base">$85.00</p>
                     </div>
 
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(10, 'Oversized Sunglasses', 120, 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop', 'Accessories', 'Make a bold statement with our oversized sunglasses. UV protection with high-fashion style.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop" alt="Oversized Sunglasses" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(10, 'Oversized Sunglasses', 120, 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(10, 'Oversized Sunglasses', 120, 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -715,10 +1051,10 @@
                         <p class="text-accent font-medium text-sm md:text-base">$120.00</p>
                     </div>
 
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(11, 'Straw Handbag', 65, 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop', 'Accessories', 'Perfect summer accessory. Handwoven straw handbag with leather handles and spacious interior.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop" alt="Straw Handbag" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(11, 'Straw Handbag', 65, 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(11, 'Straw Handbag', 65, 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -726,10 +1062,10 @@
                         <p class="text-accent font-medium text-sm md:text-base">$65.00</p>
                     </div>
 
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(12, 'White Sneakers', 95, 'https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop', 'Unisex', 'Clean, crisp white sneakers that go with everything. Comfortable cushioning for all-day wear.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop" alt="White Sneakers" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(12, 'White Sneakers', 95, 'https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(12, 'White Sneakers', 95, 'https://images.unsplash.com/photo-1560769629-975e13f0c470?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -737,10 +1073,10 @@
                         <p class="text-accent font-medium text-sm md:text-base">$95.00</p>
                     </div>
 
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(13, 'Gold Necklace', 150, 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop', 'Accessories', 'Elegant gold-plated necklace that adds a touch of sophistication to any outfit. Adjustable length.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop" alt="Gold Necklace" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(13, 'Gold Necklace', 150, 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(13, 'Gold Necklace', 150, 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -748,10 +1084,10 @@
                         <p class="text-accent font-medium text-sm md:text-base">$150.00</p>
                     </div>
 
-                    <div class="min-w-[160px] md:min-w-[280px] snap-start">
+                    <div class="min-w-[160px] md:min-w-[280px] snap-start cursor-pointer group" onclick="openProductModal(14, 'Summer Hat', 40, 'https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop', 'Accessories', 'Stay cool and stylish with our wide-brim summer hat. UPF 50+ sun protection.')">
                         <div class="relative overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-2 md:mb-4 aspect-[3/4] group shadow-soft hover:shadow-lift transition-all duration-300">
                             <img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop" alt="Summer Hat" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <button onclick="addToCart(14, 'Summer Hat', 40, 'https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
+                            <button onclick="event.stopPropagation(); addToCart(14, 'Summer Hat', 40, 'https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=600&auto=format&fit=crop')" class="absolute bottom-3 right-3 w-10 h-10 bg-white text-dark rounded-full flex items-center justify-center shadow-lg hover:bg-accent hover:text-white transition-all duration-300 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 hover-trigger">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -1076,6 +1412,149 @@
 
         let cart = [];
         let currentTestimonial = 0;
+        let currentModalProduct = null;
+        let modalQuantity = 1;
+
+        // ==================== PRODUCT MODAL FUNCTIONS ====================
+        function openProductModal(id, name, price, image, category, description) {
+            currentModalProduct = { id, name, price, image, category, description };
+            modalQuantity = 1;
+            
+            // Set modal content
+            document.getElementById('modal-image').src = image;
+            document.getElementById('modal-title').innerText = name;
+            document.getElementById('modal-price').innerText = '$' + price.toFixed(2);
+            document.getElementById('modal-category').innerText = category;
+            document.getElementById('modal-description').innerText = description;
+            document.getElementById('modal-quantity').innerText = modalQuantity;
+            
+            // Set thumbnails (using same image for demo, but you can add multiple images)
+            document.getElementById('thumb-0').src = image;
+            document.getElementById('thumb-1').src = image;
+            document.getElementById('thumb-2').src = image;
+            
+            // Update add to cart button onclick
+            document.getElementById('modal-add-to-cart').onclick = function() {
+                addToCartFromModal();
+            };
+            
+            // Show modal
+            document.getElementById('product-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Reinitialize Lucide icons
+            lucide.createIcons();
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function changeModalImage(index) {
+            // Update main image
+            const thumbSrc = document.getElementById(`thumb-${index}`).src;
+            document.getElementById('modal-image').src = thumbSrc;
+            
+            // Update active thumbnail border
+            for (let i = 0; i < 3; i++) {
+                const thumb = document.getElementById(`thumb-${i}`).parentElement;
+                if (i === index) {
+                    thumb.classList.remove('border-transparent', 'opacity-60');
+                    thumb.classList.add('border-accent', 'opacity-100');
+                } else {
+                    thumb.classList.add('border-transparent', 'opacity-60');
+                    thumb.classList.remove('border-accent', 'opacity-100');
+                }
+            }
+        }
+
+        function zoomImage() {
+            const imgSrc = document.getElementById('modal-image').src;
+            document.getElementById('zoomed-image').src = imgSrc;
+            document.getElementById('zoom-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeZoom() {
+            document.getElementById('zoom-overlay').classList.remove('active');
+            document.body.style.overflow = 'hidden'; // Keep hidden because modal is still open
+        }
+
+        function selectSize(btn) {
+            // Remove active class from all size buttons
+            document.querySelectorAll('.size-btn').forEach(b => {
+                b.classList.remove('border-accent', 'bg-accent/10', 'text-accent');
+                b.classList.add('border-gray-200');
+            });
+            
+            // Add active class to clicked button
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-accent', 'bg-accent/10', 'text-accent');
+        }
+
+        function selectColor(btn) {
+            // Remove ring from all color buttons
+            document.querySelectorAll('[onclick^="selectColor"]').forEach(b => {
+                b.classList.remove('ring-2');
+                if (b.classList.contains('bg-gray-800')) {
+                    b.classList.remove('ring-gray-800');
+                } else if (b.classList.contains('bg-blue-600')) {
+                    b.classList.remove('ring-blue-600');
+                } else if (b.classList.contains('bg-rose-400')) {
+                    b.classList.remove('ring-rose-400');
+                } else if (b.classList.contains('bg-beige')) {
+                    b.classList.remove('ring-gray-400');
+                }
+            });
+            
+            // Add ring to clicked button
+            btn.classList.add('ring-2');
+            if (btn.classList.contains('bg-gray-800')) {
+                btn.classList.add('ring-gray-800');
+            } else if (btn.classList.contains('bg-blue-600')) {
+                btn.classList.add('ring-blue-600');
+            } else if (btn.classList.contains('bg-rose-400')) {
+                btn.classList.add('ring-rose-400');
+            } else if (btn.classList.contains('bg-beige')) {
+                btn.classList.add('ring-gray-400');
+            }
+        }
+
+        function updateQuantity(change) {
+            modalQuantity += change;
+            if (modalQuantity < 1) modalQuantity = 1;
+            if (modalQuantity > 10) modalQuantity = 10;
+            document.getElementById('modal-quantity').innerText = modalQuantity;
+        }
+
+        function addToCartFromModal() {
+            if (currentModalProduct) {
+                // Add multiple items based on quantity
+                for (let i = 0; i < modalQuantity; i++) {
+                    cart.push({ 
+                        id: currentModalProduct.id, 
+                        name: currentModalProduct.name, 
+                        price: currentModalProduct.price, 
+                        image: currentModalProduct.image 
+                    });
+                }
+                updateCartUI();
+                showToast(`${currentModalProduct.name} (${modalQuantity}x) added to cart!`);
+                closeProductModal();
+            }
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('zoom-overlay').classList.contains('active')) {
+                    closeZoom();
+                } else if (document.getElementById('product-modal').classList.contains('active')) {
+                    closeProductModal();
+                }
+            }
+        });
 
         // ==================== CUSTOM CURSOR ====================
         const cursorDot = document.querySelector('.cursor-dot');
