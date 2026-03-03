@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids' Collection | Lovely Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        /* --- CSS Variables (Design System) --- */
+        :root {
+            --bg-primary: #f6f2f1;
+            --accent-pink: #e8a7a2;
+            --soft-rose: #d98c8c;
+            --text-dark: #2b2b2b;
+            --text-light: #666666;
+            --card-bg: #ffffff;
+            --light-beige: #f0e6e4;
+            --shadow-subtle: rgba(0, 0, 0, 0.06);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Poppins', sans-serif;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            
+            --transition: all 0.3s ease;
+        }
+
+        /* --- Reset & Global --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); color: var(--text-dark); background-color: var(--bg-primary); line-height: 1.6; overflow-x: hidden; }
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 600; color: var(--text-dark); }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        ul { list-style: none; }
+        img { max-width: 100%; height: auto; display: block; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
+        
+        .section-padding { padding: 80px 5%; max-width: 1440px; margin: 0 auto; }
+
+        /* --- Animations --- */
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.appear { opacity: 1; transform: translateY(0); }
+
+        /* --- Header --- */
+        .header { position: fixed; top: 0; width: 100%; background-color: rgba(246, 242, 241, 0.9); backdrop-filter: blur(10px); z-index: 1000; transition: var(--transition); border-bottom: 1px solid transparent; }
+        .header.scrolled { background-color: #fff; box-shadow: 0 2px 10px var(--shadow-subtle); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 18px 5%; max-width: 1440px; margin: 0 auto; }
+        .logo a { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+        .logo span { color: var(--accent-pink); font-weight: 400; font-style: italic; }
+        
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { font-size: 0.95rem; font-weight: 400; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -4px; left: 0; background-color: var(--text-dark); transition: var(--transition); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links .sale-link { color: var(--soft-rose); font-weight: 500; }
+        
+        .nav-icons { display: flex; align-items: center; gap: 15px; }
+        .icon-btn { display: flex; align-items: center; justify-content: center; color: var(--text-dark); }
+        .icon-btn:hover { color: var(--accent-pink); }
+        .cart-btn { position: relative; }
+        .cart-count { position: absolute; top: -5px; right: -8px; background-color: var(--soft-rose); color: white; font-size: 0.7rem; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .mobile-menu-btn { display: none; }
+
+        /* Mobile Nav */
+        .mobile-nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background-color: var(--card-bg); padding: 80px 30px; display: flex; flex-direction: column; gap: 20px; box-shadow: -5px 0 15px var(--shadow-subtle); transition: right 0.4s ease; z-index: 1001; }
+        .mobile-nav.open { right: 0; }
+        .close-menu-btn { position: absolute; top: 25px; right: 30px; }
+        .mobile-nav a { font-size: 1.1rem; border-bottom: 1px solid var(--light-beige); padding-bottom: 10px; }
+
+        /* --- Category Hero --- */
+        .category-hero { position: relative; height: 35vh; min-height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; margin-top: 60px; overflow: hidden; padding: 0 5%; }
+        /* Using a cute children's fashion image for the background */
+        .category-hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1519241047957-be31d7379a5d?q=80&w=2070&auto=format&fit=crop') center/cover; opacity: 0.15; z-index: -1; }
+        .category-hero h1 { font-size: 3.2rem; margin-bottom: 10px; }
+        .category-hero p { color: var(--text-light); max-width: 600px; margin: 0 auto; font-size: 1rem; }
+
+        /* --- Filter & Sort Bar --- */
+        .filter-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--light-beige); margin-bottom: 30px; background-color: var(--bg-primary); }
+        .filter-left, .filter-right { display: flex; gap: 15px; align-items: center; }
+        .filter-item { display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-dark); font-size: 0.95rem; font-weight: 500; }
+        .filter-item:hover { color: var(--accent-pink); }
+        .item-count { color: var(--text-light); font-size: 0.9rem; }
+        select.sort-dropdown { border: none; background: transparent; font-family: var(--font-body); font-size: 0.95rem; color: var(--text-dark); cursor: pointer; outline: none; padding-right: 5px; font-weight: 500; }
+
+        /* --- Product Grid --- */
+        .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding-bottom: 60px; }
+        .product-card { background-color: var(--card-bg); border-radius: var(--radius-md); padding: 12px; box-shadow: 0 4px 12px var(--shadow-subtle); transition: var(--transition); position: relative; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px var(--shadow-hover); }
+        
+        .product-img-wrapper { position: relative; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 12px; }
+        .product-img-wrapper img { width: 100%; height: 320px; object-fit: cover; transition: var(--transition); }
+        .product-card:hover .product-img-wrapper img { transform: scale(1.05); }
+        
+        .wishlist-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: var(--transition); box-shadow: 0 2px 5px var(--shadow-subtle); }
+        .wishlist-btn .material-icons-outlined { font-size: 18px; }
+        .product-card:hover .wishlist-btn { opacity: 1; }
+        .wishlist-btn:hover { color: var(--soft-rose); }
+        
+        .product-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .product-info h4 { font-size: 1rem; margin-bottom: 4px; font-family: var(--font-body); font-weight: 500; line-height: 1.3; }
+        .price { color: var(--text-light); font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+        
+        .add-to-cart-btn { width: 100%; padding: 10px; background-color: var(--light-beige); color: var(--text-dark); border-radius: var(--radius-sm); font-weight: 500; margin-top: auto; font-size: 0.9rem; }
+        .add-to-cart-btn:hover { background-color: var(--text-dark); color: white; }
+
+        /* --- Pagination --- */
+        .pagination { display: flex; justify-content: center; gap: 8px; padding-bottom: 80px; }
+        .page-btn { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--light-beige); color: var(--text-dark); font-weight: 500; transition: var(--transition); font-size: 0.9rem; }
+        .page-btn:hover, .page-btn.active { background-color: var(--text-dark); color: white; border-color: var(--text-dark); }
+
+        /* --- Mobile Responsive Magic --- */
+        @media (max-width: 1024px) {
+            .product-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .category-hero h1 { font-size: 2.5rem; }
+            
+            /* Premium App-like 2-column grid for tablets & large phones */
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .product-img-wrapper img { height: 260px; }
+            
+            /* Sticky filter bar on mobile scroll */
+            .filter-bar { position: sticky; top: 60px; z-index: 10; padding: 15px 0; }
+        }
+
+        @media (max-width: 480px) {
+            .section-padding { padding: 20px 5%; }
+            .category-hero { height: auto; padding: 40px 5%; margin-top: 60px; }
+            .category-hero h1 { font-size: 2rem; }
+            .category-hero p { font-size: 0.85rem; }
+            
+            /* Mobile Filter Bar Adjustments */
+            .filter-bar { padding: 12px 0; border-top: 1px solid var(--light-beige); border-bottom: 1px solid var(--light-beige); }
+            .item-count { display: none; } /* Hide count on mobile for cleaner look */
+            .filter-right span { display: none; } /* Hide "Sort by:" text */
+            select.sort-dropdown { font-size: 0.9rem; }
+            .filter-item { font-size: 0.9rem; }
+
+            /* True Mobile 2-Column Product Grid */
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 40px; }
+            .product-card { padding: 8px; border-radius: var(--radius-sm); }
+            .product-img-wrapper { margin-bottom: 8px; border-radius: 6px; }
+            .product-img-wrapper img { height: 180px; } /* Perfect height for mobile dual-column */
+            
+            /* Always show wishlist on touch devices */
+            .wishlist-btn { opacity: 1; top: 5px; right: 5px; width: 28px; height: 28px; }
+            .wishlist-btn .material-icons-outlined { font-size: 16px; }
+            
+            /* Text adjustments for small cards */
+            .product-info h4 { font-size: 0.85rem; }
+            .price { font-size: 0.85rem; margin-bottom: 8px; }
+            .add-to-cart-btn { padding: 8px; font-size: 0.8rem; }
+            
+            .pagination { padding-bottom: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#">Lovely<span>Collection</span></a>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#">Home</a>
+                <a href="#">Women</a>
+                <a href="#">Men</a>
+                <a href="#" class="active">Kids</a> <a href="#">Accessories</a>
+                <a href="#" class="sale-link">Sale</a>
+                <a href="#">Contact</a>
+            </nav>
+
+            <div class="nav-icons">
+                <button class="icon-btn"><span class="material-icons-outlined">search</span></button>
+                <button class="icon-btn"><span class="material-icons-outlined">person</span></button>
+                <button class="icon-btn cart-btn">
+                    <span class="material-icons-outlined">shopping_bag</span>
+                    <span class="cart-count" id="cart-counter">0</span>
+                </button>
+                <button class="icon-btn mobile-menu-btn" id="mobile-menu-btn">
+                    <span class="material-icons-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-nav" id="mobile-nav">
+            <button class="close-menu-btn" id="close-menu-btn"><span class="material-icons-outlined">close</span></button>
+            <a href="#">Home</a>
+            <a href="#">Women</a>
+            <a href="#">Men</a>
+            <a href="#" class="active">Kids</a>
+            <a href="#">Accessories</a>
+            <a href="#" class="sale-link">Sale</a>
+            <a href="#">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="category-hero fade-in">
+            <div class="hero-text">
+                <h1>Kids' Collection</h1>
+                <p>Gentle fabrics and playful designs for your little ones. Experience our soft-touch, premium clothing line crafted specially for everyday adventures.</p>
+            </div>
+        </section>
+
+        <section class="section-padding">
+            
+            <div class="filter-bar fade-in">
+                <div class="filter-left">
+                    <div class="filter-item">
+                        <span class="material-icons-outlined" style="font-size: 1.2rem;">tune</span> Filter
+                    </div>
+                    <span class="item-count">Showing 1–8 of 20 results</span>
+                </div>
+                <div class="filter-right">
+                    <span>Sort by:</span>
+                    <select class="sort-dropdown">
+                        <option value="featured">Featured</option>
+                        <option value="new">New Arrivals</option>
+                        <option value="low-high">Price: Low to High</option>
+                        <option value="high-low">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="product-grid">
+                
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1522771930-78848d92871d?q=80&w=1974&auto=format&fit=crop" alt="Organic Onesie">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Organic Cotton Onesie</h4>
+                        <p class="price">$35.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?q=80&w=1972&auto=format&fit=crop" alt="Knit Cardigan">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Chunky Knit Cardigan</h4>
+                        <p class="price">$45.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=2070&auto=format&fit=crop" alt="Denim Overalls">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Classic Denim Overalls</h4>
+                        <p class="price">$55.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=1972&auto=format&fit=crop" alt="Linen Romper">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Soft Linen Romper</h4>
+                        <p class="price">$40.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1622290319146-7b63df48a635?q=80&w=1972&auto=format&fit=crop" alt="Striped Tee">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Essential Striped Tee</h4>
+                        <p class="price">$25.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1611428532432-84381ff23b97?q=80&w=1974&auto=format&fit=crop" alt="Pleated Skirt">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Pastel Pleated Skirt</h4>
+                        <p class="price">$30.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1542282811-943ef1a977c3?q=80&w=2072&auto=format&fit=crop" alt="Jogger Pants">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Cozy Cotton Joggers</h4>
+                        <p class="price">$35.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?q=80&w=2070&auto=format&fit=crop" alt="Mini Sneakers">
+                        <button class="wishlist-btn"><span class="material-icons-outlined">favorite_border</span></button>
+                    </div>
+                    <div class="product-info">
+                        <h4>Premium Mini Sneakers</h4>
+                        <p class="price">$50.00</p>
+                        <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pagination fade-in">
+                <button class="page-btn"><span class="material-icons-outlined">chevron_left</span></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn"><span class="material-icons-outlined">chevron_right</span></button>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Sticky Header
+            const header = document.querySelector('.header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // 2. Mobile Menu
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileNav.classList.add('open');
+            });
+
+            closeMenuBtn.addEventListener('click', () => {
+                mobileNav.classList.remove('open');
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target) && mobileNav.classList.contains('open')) {
+                    mobileNav.classList.remove('open');
+                }
+            });
+
+            // 3. Cart Logic
+            let cartCount = 0;
+            const cartCounterEl = document.getElementById('cart-counter');
+
+            window.addToCart = function() {
+                cartCount++;
+                cartCounterEl.textContent = cartCount;
+                cartCounterEl.style.transform = 'scale(1.5)';
+                setTimeout(() => {
+                    cartCounterEl.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 4. Fade-in on Scroll
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const appearOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -30px 0px"
+            };
+
+            const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    } else {
+                        entry.target.classList.add('appear');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, appearOptions);
+
+            fadeElements.forEach(el => {
+                appearOnScroll.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
